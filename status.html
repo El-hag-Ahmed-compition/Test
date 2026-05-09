@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>استعلام المتسابقين | مسجد الملهود</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body { background: #06301d; color: #fff; font-family: sans-serif; text-align: center; padding: 20px; }
+        .search-area { border: 2px solid #fdb931; border-radius: 15px; padding: 25px; max-width: 400px; margin: auto; }
+        .res-info { display: none; background: #fff; color: #000; padding: 20px; border-radius: 15px; margin-top: 20px; text-align: right; }
+        #finalCard { width: 450px; background: #fff; color: #000; border: 4px solid #06301d; position: absolute; left: -9999px; }
+    </style>
+</head>
+<body>
+    <div class="search-area">
+        <h2 style="color:#fdb931">استعلام عن نتيجة</h2>
+        <input type="text" id="cIn" placeholder="أدخل الكود M-xxxx" style="padding:10px; width:70%; border-radius:5px;">
+        <button onclick="search()" style="padding:10px; background:#fdb931; border:none; cursor:pointer; font-weight:bold;">بحث</button>
+
+        <div id="res" class="res-info">
+            <h3 id="n"></h3>
+            <p>المستوى: <b id="l"></b></p>
+            <p>المرحلة الأولى: <b id="s1" style="color:green;"></b></p>
+            <p>المرحلة الثانية: <b id="s2" style="color:blue;"></b></p>
+            <button onclick="draw()" style="width:100%; padding:15px; background:#06301d; color:#fdb931; border:none; cursor:pointer; font-weight:bold;">تحميل الكارت ⬇️</button>
+        </div>
+    </div>
+
+    <div id="finalCard">
+        <div style="background:#06301d; color:#fdb931; padding:15px; font-weight:bold; font-size:1.2rem;">بطاقة متسابق | مسجد الحاج أحمد الملهود</div>
+        <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
+            <div id="ct" style="text-align:right; line-height:2;"></div>
+            <div id="cq"></div>
+        </div>
+        <div style="background:#fdb931; color:#06301d; padding:5px; font-weight:bold;">يرجى إبراز الكارت عند الدخول</div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbx2uUWWys2q7bF5VZSx5h4lDztVhbDGnXcIv9g_y-tHwKeKG1azsYLcXTnlmsNQPGwR/exec';
+        let st = {};
+        function search() {
+            fetch(`${scriptURL}?action=checkStatus&code=${document.getElementById('cIn').value}`).then(r=>r.json()).then(d=>{
+                if(d.status === "found") {
+                    st = d; st.code = document.getElementById('cIn').value;
+                    document.getElementById('res').style.display = "block";
+                    document.getElementById('n').innerText = d.name;
+                    document.getElementById('l').innerText = d.level;
+                    document.getElementById('s1').innerText = d.score1;
+                    document.getElementById('s2').innerText = d.score2 || "قيد الانتظار";
+                } else { alert("الكود غير صحيح"); }
+            });
+        }
+        function draw() {
+            document.getElementById('ct').innerHTML = `الاسم: ${st.name}<br>الميلاد: ${st.birth}<br>المستوى: ${st.level}<br>الكود: ${st.code}`;
+            document.getElementById('cq').innerHTML = "";
+            new QRCode(document.getElementById("cq"), { text: st.code, width: 90, height: 90 });
+            setTimeout(() => {
+                html2canvas(document.getElementById('finalCard')).then(canvas => {
+                    let a = document.createElement('a'); a.download=`كارت.png`; a.href=canvas.toDataURL(); a.click();
+                });
+            }, 800);
+        }
+    </script>
+</body>
+</html>
