@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل المتسابقين | مسجد الملهود</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        
+        body {
+            background-color: #06301d;
+            background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
+            background-blend-mode: overlay;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #fdb931;
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .form-group { margin-bottom: 15px; text-align: right; }
+        label { display: block; margin-bottom: 8px; color: #fdb931; font-weight: bold; }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #fdb931;
+            background: #fff;
+            color: #333;
+            font-family: 'Cairo', sans-serif;
+            box-sizing: border-box;
+        }
+
+        .age-info { margin-top: 8px; font-size: 0.9rem; color: #fdb931; font-weight: bold; }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #fdb931, #b8860b);
+            color: #06301d;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        #successBox {
+            display: none;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px dashed #fdb931;
+        }
+
+        .code-display {
+            font-size: 2.5rem;
+            color: #fdb931;
+            margin: 15px 0;
+            letter-spacing: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h2 style="color: #fdb931; text-align:center;">تسجيل المتسابقين</h2>
+
+    <div class="form-card">
+        <form id="registrationForm">
+            <div class="form-group">
+                <label>الاسم الرباعي:</label>
+                <input type="text" name="name" required placeholder="أدخل اسمك كاملاً">
+            </div>
+
+            <div class="form-group">
+                <label>تاريخ الميلاد:</label>
+                <input type="date" id="birthDate" name="birthDate" required>
+                <div id="ageDisplay" class="age-info"></div>
+            </div>
+
+            <div class="form-group">
+                <label>المستويات المتاحة لك:</label>
+                <select id="levelSelect" name="level" required disabled>
+                    <option value="">أدخل تاريخ الميلاد أولاً</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>رقم الواتساب:</label>
+                <input type="tel" name="phone" required placeholder="01xxxxxxxxx">
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-submit">تأكيد التسجيل</button>
+            <p id="statusMsg" style="text-align:center; margin-top:10px;"></p>
+        </form>
+
+        <div id="successBox">
+            <h3 style="color: #fdb931;">تم التسجيل بنجاح! ✅</h3>
+            <p>احتفظ بكود المتسابق الخاص بك:</p>
+            <div id="finalCode" class="code-display"></div>
+            <p style="font-size: 0.8rem;">برجاء تصوير الشاشة لإظهار الكود للمشرف</p>
+            <button class="btn-submit" onclick="location.reload()">تسجيل متسابق جديد</button>
+        </div>
+    </div>
+
+    <script>
+        const birthDateInput = document.getElementById('birthDate');
+        const levelSelect = document.getElementById('levelSelect');
+        const ageDisplay = document.getElementById('ageDisplay');
+        const form = document.getElementById('registrationForm');
+        const successBox = document.getElementById('successBox');
+
+        // مصفوفة المستويات حسب الحد الأقصى للسن
+        const levels = [
+            { id: "المستوى الخامس", text: "المستوى الخامس (5 أجزاء) - حتى 10 سنوات", max: 10 },
+            { id: "المستوى الرابع", text: "المستوى الرابع (ربع القرآن) - حتى 11 سنة", max: 11 },
+            { id: "المستوى الثالث", text: "المستوى الثالث (ثلث القرآن) - حتى 13 سنة", max: 13 },
+            { id: "المستوى الثاني", text: "المستوى الثاني (نصف القرآن) - حتى 15 سنة", max: 15 },
+            { id: "المستوى الأول", text: "المستوى الأول (القرآن كاملاً) - حتى 20 سنة", max: 20 }
+        ];
+
+        birthDateInput.addEventListener('change', function() {
+            const birthDate = new Date(this.value);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+
+            ageDisplay.innerText = age >= 0 ? `السن الحالي: ${age} سنة` : "";
+            
+            // فلترة القائمة
+            levelSelect.innerHTML = '<option value="">اختر المستوى...</option>';
+            const filtered = levels.filter(l => age <= l.max);
+
+            if (filtered.length > 0) {
+                levelSelect.disabled = false;
+                filtered.forEach(l => {
+                    const opt = document.createElement('option');
+                    opt.value = l.id;
+                    opt.text = l.text;
+                    levelSelect.appendChild(opt);
+                });
+            } else {
+                levelSelect.disabled = true;
+                levelSelect.innerHTML = '<option value="">السن غير مسموح به</option>';
+            }
+        });
+
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbx2uUWWys2q7bF5VZSx5h4lDztVhbDGnXcIv9g_y-tHwKeKG1azsYLcXTnlmsNQPGwR/exec';
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('statusMsg').innerText = "جاري حفظ البيانات...";
+
+            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success' || data.code) {
+                    form.style.display = 'none';
+                    successBox.style.display = 'block';
+                    document.getElementById('finalCode').innerText = data.code;
+                } else {
+                    throw new Error();
+                }
+            })
+            .catch(error => {
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('statusMsg').innerText = "خطأ! تأكد من اتصال الإنترنت.";
+            });
+        });
+    </script>
+</body>
+</html>
