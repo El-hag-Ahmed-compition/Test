@@ -91,6 +91,15 @@
             </div>
 
             <div class="form-group">
+                <label>النوع:</label>
+                <select name="gender" required>
+                    <option value="">اختر النوع</option>
+                    <option value="ذكر">ذكر</option>
+                    <option value="أنثى">أنثى</option>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label>تاريخ الميلاد:</label>
                 <input type="date" id="birthDate" name="birthDate" required>
                 <div id="ageDisplay" class="age-info"></div>
@@ -128,7 +137,6 @@
         const form = document.getElementById('registrationForm');
         const successBox = document.getElementById('successBox');
 
-        // مصفوفة المستويات حسب الحد الأقصى للسن
         const levels = [
             { id: "المستوى الخامس", text: "المستوى الخامس (5 أجزاء) - حتى 10 سنوات", max: 10 },
             { id: "المستوى الرابع", text: "المستوى الرابع (ربع القرآن) - حتى 11 سنة", max: 11 },
@@ -146,7 +154,6 @@
 
             ageDisplay.innerText = age >= 0 ? `السن الحالي: ${age} سنة` : "";
             
-            // فلترة القائمة
             levelSelect.innerHTML = '<option value="">اختر المستوى...</option>';
             const filtered = levels.filter(l => age <= l.max);
 
@@ -164,7 +171,8 @@
             }
         });
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwm1Ugy-we0kTiOwqWQsRH2b1CwUvME3Zn6yxFra0LRup9gMZL_ss5D9qlVxyo4mxRouw/exec';
+        // حط رابط الـ Web App الجديد هنا
+        const scriptURL = 'حط_الرابط_هنا';
 
         form.addEventListener('submit', e => {
             e.preventDefault();
