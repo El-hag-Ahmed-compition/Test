@@ -11,29 +11,34 @@
     <style>
         body { background-color: #002D04; margin: 0; padding: 10px; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
         
-        /* واجهة الاستعلام (نفس صورة الموبايل بالظبط) */
-        .main-container { width: 95%; max-width: 400px; border: 2px solid #D4AF37; border-radius: 20px; padding: 20px; margin-top: 30px; text-align: center; }
+        /* صندوق البحث */
+        .search-box { width: 95%; max-width: 400px; border: 2px solid #D4AF37; border-radius: 20px; padding: 20px; margin-top: 30px; text-align: center; }
         .title { color: #D4AF37; font-size: 22px; margin-bottom: 20px; font-weight: bold; }
-        .search-row { display: flex; gap: 5px; margin-bottom: 20px; }
+        .input-row { display: flex; gap: 5px; margin-bottom: 20px; }
         input { flex: 1; padding: 12px; border-radius: 5px; border: none; text-align: center; font-size: 16px; font-weight: bold; }
         .btn-search { background-color: #D4AF37; color: black; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
 
-        /* كارت النتيجة الأبيض */
+        /* شاشة النتيجة (اللي هتظهر للطالب) */
         #resultDisplay { 
             display: none; 
             background-color: white; 
             border-radius: 15px; 
-            padding: 20px; 
+            padding: 25px; 
             text-align: right; 
+            width: 95%; 
+            max-width: 400px; 
+            margin-top: 20px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-sizing: border-box;
         }
-        .student-name { font-size: 20px; font-weight: bold; color: black; margin-bottom: 15px; }
-        .info-item { color: #333; margin-bottom: 8px; font-size: 16px; font-weight: bold; }
-        .status-green { color: #28a745; } /* قيد المراجعة */
-        .status-blue { color: #007bff; }  /* قيد الانتظار */
+        .st-name { font-size: 22px; font-weight: bold; color: black; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .st-info { color: #333; margin-bottom: 10px; font-size: 17px; font-weight: bold; }
+        .green-txt { color: #28a745; }
+        .blue-txt { color: #007bff; }
+        .gold-txt { color: #D4AF37; }
 
-        /* زرار التحميل الأخضر (الهدف المطلوب) */
-        .btn-download-green { 
+        /* الزرار الأخضر للتحميل */
+        .btn-download { 
             background-color: #002D04; 
             color: #D4AF37; 
             width: 100%; 
@@ -41,104 +46,101 @@
             border: none; 
             border-radius: 5px; 
             font-weight: bold; 
-            font-size: 16px;
-            margin-top: 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            font-size: 16px; 
+            margin-top: 20px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; 
         }
 
-        /* --- تصميم الكارت "المخفي" اللي هيتم تصويره ونزوله للموبايل --- */
-        #finalCardTemplate {
-            position: absolute; left: -9999px; /* مخفي عن العين بس موجود للكود */
-            width: 600px; height: 300px; background-color: white;
-        }
-        .card-top { background-color: #002D04; color: #D4AF37; padding: 10px; text-align: center; font-weight: bold; font-size: 22px; border-bottom: 4px solid #D4AF37; }
-        .card-middle { display: flex; padding: 20px; align-items: center; justify-content: space-between; }
-        .card-info { text-align: right; color: black; font-size: 18px; font-weight: bold; line-height: 1.8; }
-        .card-qr { width: 140px; height: 140px; border: 2px solid #002D04; }
-        .card-bottom { background-color: #D4AF37; color: black; padding: 8px; text-align: center; font-weight: bold; font-size: 16px; position: absolute; bottom: 0; width: 100%; }
+        /* --- الكارت الرسمي (مخفي تماماً عن الطالب) --- */
+        #hiddenCard { position: absolute; left: -9999px; width: 600px; height: 300px; background-color: white; }
+        .c-header { background-color: #002D04; color: #D4AF37; padding: 10px; text-align: center; font-weight: bold; font-size: 22px; border-bottom: 4px solid #D4AF37; }
+        .c-middle { display: flex; padding: 20px; align-items: center; justify-content: space-between; }
+        .c-data { text-align: right; color: black; font-size: 18px; font-weight: bold; line-height: 1.8; width: 65%; }
+        .c-qrcode { width: 140px; height: 140px; border: 2px solid #002D04; }
+        .c-footer { background-color: #D4AF37; color: black; padding: 8px; text-align: center; font-weight: bold; font-size: 16px; position: absolute; bottom: 0; width: 100%; }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
+    <div class="search-box">
         <div class="title">استعلام عن نتيجة</div>
-        <div class="search-row">
-            <button class="btn-search" onclick="checkCode()">بحث</button>
-            <input type="text" id="codeInput" placeholder="أدخل الكود (مثل M-2625)">
-        </div>
-
-        <div id="resultDisplay">
-            <div class="student-name" id="resName"></div>
-            <div class="info-item">المستوى: <span id="resLevel"></span></div>
-            <div class="info-item">المرحلة الأولى: <span class="status-green" id="resScore1"></span></div>
-            <div class="info-item">المرحلة الثانية: <span class="status-blue" id="resScore2"></span></div>
-
-            <button class="btn-download-green" onclick="generateAndDownload()">
-                تحميل الكارت ⬇️
-            </button>
+        <div class="input-row">
+            <button class="btn-search" onclick="doSearch()">بحث</button>
+            <input type="text" id="codeInp" placeholder="">
         </div>
     </div>
 
-    <div id="finalCardTemplate">
-        <div class="card-top">بطاقة متسابق | مسجد الحاج أحمد الملهود</div>
-        <div class="card-middle">
-            <div id="qrPlaceholder" class="card-qr"></div>
-            <div class="card-info">
-                <div>الاسم: <span id="cardName"></span></div>
+    <div id="resultDisplay">
+        <div class="st-name" id="resName"></div>
+        <div class="st-info">المستوى: <span id="resLevel"></span></div>
+        <div class="st-info">الكود: <span class="gold-txt" id="resCode"></span></div>
+        <div class="st-info">المرحلة الأولى: <span class="green-txt" id="resS1"></span></div>
+        <div class="st-info">المرحلة الثانية: <span class="blue-txt" id="resS2"></span></div>
+
+        <button class="btn-download" onclick="downloadImage()">
+            تحميل الكارت ⬇️
+        </button>
+    </div>
+
+    <div id="hiddenCard">
+        <div class="c-header">بطاقة متسابق | مسجد الحاج أحمد الملهود</div>
+        <div class="c-middle">
+            <div id="qrPlace" class="c-qrcode"></div>
+            <div class="c-data">
+                <div>الاسم: <span id="cName"></span></div>
                 <div>النوع: ذكر</div>
-                <div>المستوى: <span id="cardLevel"></span></div>
-                <div style="color:#D4AF37">الكود: <span id="cardCode"></span></div>
+                <div>المستوى: <span id="cLevel"></span></div>
+                <div style="color:#D4AF37">الكود: <span id="cCode"></span></div>
             </div>
         </div>
-        <div class="card-bottom">يرجى إبراز الكارت عند دخول الاختبارات</div>
+        <div class="c-footer">يرجى إبراز الكارت عند دخول الاختبارات</div>
     </div>
 
     <script>
-        // دالة البحث والربط مع الشيت
-        function checkCode() {
-            const code = document.getElementById('codeInput').value;
-            const scriptURL = "https://script.google.com/macros/s/AKfycbyMdgVqMzzZv6dLIn5L4xsqK5ZjaY3ZmfddqwCw-yARPcq52XX-K-24IRmoJhuX_6KPLQ/exec"; // حط الرابط بتاعك هنا
+        function doSearch() {
+            const code = document.getElementById('codeInp').value;
+            const scriptURL = "رابط_الـ_WEB_APP_الخاص_بك"; 
 
-            if(!code) return alert("من فضلك دخل الكود!");
+            if(!code) return alert("دخل الكود الأول!");
 
-            // جلب البيانات
             fetch(`${scriptURL}?action=checkStatus&code=${code}`)
             .then(res => res.json())
             .then(data => {
                 if(data.status === "found") {
-                    // عرض البيانات في الصفحة
+                    // 1. ملء بيانات شاشة النتيجة
                     document.getElementById('resName').innerText = data.name;
                     document.getElementById('resLevel').innerText = data.level;
-                    document.getElementById('resScore1').innerText = data.score1 || "قيد المراجعة";
-                    document.getElementById('resScore2').innerText = data.score2 || "قيد الانتظار";
-                    
-                    // تجهيز الكارت المخفي بالبيانات
-                    document.getElementById('cardName').innerText = data.name;
-                    document.getElementById('cardLevel').innerText = data.level;
-                    document.getElementById('cardCode').innerText = "T-" + code;
-                    
-                    // توليد الـ QR داخل الكارت المخفي
-                    $('#qrPlaceholder').empty().qrcode({ text: code, foreground: "#002D04", width: 140, height: 140 });
+                    document.getElementById('resCode').innerText = code;
+                    document.getElementById('resS1').innerText = data.score1 || "قيد المراجعة";
+                    document.getElementById('resS2').innerText = data.score2 || "قيد الانتظار";
 
+                    // 2. ملء بيانات الكارت المخفي
+                    document.getElementById('cName').innerText = data.name;
+                    document.getElementById('cLevel').innerText = data.level;
+                    document.getElementById('cCode').innerText = code;
+                    
+                    // توليد QR الكارت
+                    $('#qrPlace').empty().qrcode({ text: code, foreground: "#002D04", width: 140, height: 140 });
+
+                    // إظهار النتيجة للطالب
                     document.getElementById('resultDisplay').style.display = "block";
                 } else {
-                    alert("عفواً.. الكود غير موجود أو خطأ");
+                    alert("عفواً.. الكود غير موجود!");
                 }
             });
         }
 
-        // دالة الزرار الأخضر: تحويل القالب المخفي لصورة وتحميلها فوراً
-        function generateAndDownload() {
-            const card = document.getElementById('finalCardTemplate');
-            const name = document.getElementById('resName').innerText;
+        function downloadImage() {
+            const card = document.getElementById('hiddenCard');
+            const student = document.getElementById('resName').innerText;
 
             html2canvas(card, { scale: 3 }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `كارت_${name}.png`;
+                link.download = `كارت_${student}.png`;
                 link.href = canvas.toDataURL("image/png");
                 link.click();
             });
