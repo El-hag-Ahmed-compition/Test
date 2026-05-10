@@ -88,7 +88,7 @@
         btn.innerText = "جاري البحث...";
 
         // ضع رابط الـ Web App الخاص بك هنا
-        const scriptURL = "رابط_الـ_APPS_SCRIPT_الجديد_هنا";
+        const scriptURL = "https://script.google.com/macros/s/AKfycbyMdgVqMzzZv6dLIn5L4xsqK5ZjaY3ZmfddqwCw-yARPcq52XX-K-24IRmoJhuX_6KPLQ/exec";
 
         fetch(`${scriptURL}?action=checkStatus&code=${code}`)
             .then(response => response.json())
