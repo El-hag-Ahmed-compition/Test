@@ -28,7 +28,6 @@
             align-items: center; 
             min-height: 100vh; 
             padding: 15px;
-            /* تم السماح بالسكرول هنا */
             overflow-y: auto; 
             overflow-x: hidden;
         }
@@ -41,11 +40,25 @@
             pointer-events: none;
         }
 
+        /* زخرفة إسلامية متحركة */
+        .bg-pattern {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Cpath d="M40 0l40 40-40 40-40-40zm0 10l30 30-30 30-30-30zm0 10l20 20-20 20-20-20z" fill="%23fdb931" fill-opacity="0.03"/%3E%3C/svg%3E');
+            animation: movePattern 60s linear infinite;
+        }
+
+        @keyframes movePattern {
+            from { background-position: 0 0; }
+            to { background-position: 1000px 1000px; }
+        }
+
+        /* دوائر نورانية عائمة */
         .orb {
             position: absolute;
-            background: radial-gradient(circle, rgba(253, 185, 49, 0.12) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(253, 185, 49, 0.1) 0%, transparent 70%);
             border-radius: 50%;
-            filter: blur(50px);
+            filter: blur(40px);
             animation: moveOrb 20s infinite alternate ease-in-out;
         }
         .orb-1 { width: 300px; height: 300px; top: -50px; left: -50px; }
@@ -53,7 +66,31 @@
 
         @keyframes moveOrb {
             from { transform: translate(0, 0) scale(1); }
-            to { transform: translate(40px, 80px) scale(1.1); }
+            to { transform: translate(30px, 60px) scale(1.1); }
+        }
+
+        /* نجوم وشهب متحركة */
+        .stars {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: radial-gradient(#fdb931 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.1;
+        }
+        
+        .shooting-star {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 150px; height: 1px;
+            background: linear-gradient(-45deg, #fdb931, transparent);
+            animation: shooting 3s infinite;
+        }
+
+        @keyframes shooting {
+            0% { transform: rotate(-45deg) translateX(-200%); opacity: 0; }
+            10% { opacity: 1; }
+            20% { opacity: 0; }
+            100% { transform: rotate(-45deg) translateX(200%); opacity: 0; }
         }
 
         /* --- المستطيل العلوي للعنوان --- */
@@ -78,7 +115,7 @@
 
         .quran-verse { font-family: 'Amiri Quran', serif; font-size: 1.3rem; color: #eee; margin-bottom: 30px; line-height: 1.6; }
         
-        /* --- العداد الأفقي (زي الصور الأصلية) --- */
+        /* --- العداد الأفقي --- */
         .timer-card {
             background: rgba(0,0,0,0.25);
             border-radius: 20px;
@@ -141,8 +178,13 @@
 </head>
 <body>
     <div class="bg-layer">
+        <div class="bg-pattern"></div>
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
+        <div class="stars"></div>
+        <div class="shooting-star"></div>
+        <div class="shooting-star" style="top: 20%; left: 80%; animation-delay: 1s;"></div>
+        <div class="shooting-star" style="top: 70%; left: 20%; animation-delay: 2s;"></div>
     </div>
 
     <div class="header-box">
