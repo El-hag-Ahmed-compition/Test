@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مسابقة مسجد الحاج أحمد الملهود</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -12,12 +12,11 @@
             --gold: #fdb931;
             --dark-green: #06301d;
             --light-green: #0a4d2e;
-            --glass: rgba(255, 255, 255, 0.07);
+            --glass: rgba(255, 255, 255, 0.08);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* --- الأنيميشن الحي للخلفية --- */
         body { 
             background: radial-gradient(circle at center, var(--light-green) 0%, var(--dark-green) 100%);
             background-attachment: fixed;
@@ -28,12 +27,14 @@
             flex-direction: column; 
             align-items: center; 
             min-height: 100vh; 
-            padding: 15px; 
-            overflow: hidden; /* عشان الأنيميشن ميطلعش برا */
+            padding: 15px;
+            /* تم السماح بالسكرول هنا */
+            overflow-y: auto; 
+            overflow-x: hidden;
         }
 
-        /* كرات نورانية بتتحرك ببطء في الخلفية */
-        .bg-glow {
+        /* --- أنيميشن الخلفية الحية --- */
+        .bg-layer {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
@@ -42,128 +43,132 @@
 
         .orb {
             position: absolute;
-            background: radial-gradient(circle, rgba(253, 185, 49, 0.15) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(253, 185, 49, 0.12) 0%, transparent 70%);
             border-radius: 50%;
-            filter: blur(40px);
-            animation: float 20s infinite alternate ease-in-out;
+            filter: blur(50px);
+            animation: moveOrb 20s infinite alternate ease-in-out;
         }
-        .orb-1 { width: 400px; height: 400px; top: -100px; left: -100px; }
-        .orb-2 { width: 300px; height: 300px; bottom: -50px; right: -50px; animation-delay: -5s; }
+        .orb-1 { width: 300px; height: 300px; top: -50px; left: -50px; }
+        .orb-2 { width: 250px; height: 250px; bottom: 50px; right: -50px; animation-delay: -5s; }
 
-        @keyframes float {
+        @keyframes moveOrb {
             from { transform: translate(0, 0) scale(1); }
-            to { transform: translate(60px, 100px) scale(1.1); }
+            to { transform: translate(40px, 80px) scale(1.1); }
         }
 
-        /* --- تصميم المستطيل العلوي المنفصل --- */
-        .header-rect {
+        /* --- المستطيل العلوي للعنوان --- */
+        .header-box {
             background: var(--glass);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(253, 185, 49, 0.3);
+            border: 1px solid rgba(253, 185, 49, 0.25);
             border-radius: 15px;
-            padding: 12px 25px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            padding: 15px;
             width: 100%;
             max-width: 450px;
             text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
 
-        .top-title { 
-            color: var(--gold); 
-            font-weight: 900; 
-            font-size: 1.4rem; 
-            margin: 0;
-            text-shadow: 0 0 10px rgba(253,185,49,0.2);
-        }
+        .top-title { color: var(--gold); font-weight: 900; font-size: 1.4rem; margin: 0; }
 
         .container { width: 100%; max-width: 480px; text-align: center; }
         
-        .bismillah { font-family: 'Amiri Quran', serif; font-size: 2.8rem; margin: 15px 0; color: #fff; }
+        .bismillah { font-family: 'Amiri Quran', serif; font-size: 2.8rem; margin: 15px 0; }
 
-        .quran-verse { font-family: 'Amiri Quran', serif; font-size: 1.3rem; color: #ddd; margin-bottom: 25px; }
+        .quran-verse { font-family: 'Amiri Quran', serif; font-size: 1.3rem; color: #eee; margin-bottom: 30px; line-height: 1.6; }
         
-        /* العداد التنازلي زي الصورة */
+        /* --- العداد الأفقي (زي الصور الأصلية) --- */
         .timer-card {
-            background: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.25);
             border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 25px;
+            padding: 20px 10px;
+            margin-bottom: 30px;
             border: 1px solid rgba(255,255,255,0.05);
         }
 
         .timer-flex { display: flex; justify-content: center; gap: 8px; }
-        .timer-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; flex: 1; border-bottom: 3px solid var(--gold); }
-        .timer-box span { font-size: 1.6rem; font-weight: 800; color: var(--gold); display: block; }
-        .timer-label { font-size: 0.7rem; color: #aaa; }
+        
+        .timer-unit { 
+            background: rgba(255,255,255,0.05); 
+            padding: 15px 5px; 
+            border-radius: 15px; 
+            flex: 1; 
+            border-bottom: 3px solid var(--gold); 
+        }
 
-        /* الأزرار */
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .timer-unit span { font-size: 1.6rem; font-weight: 900; color: var(--gold); display: block; }
+        .timer-label { font-size: 0.75rem; color: #bbb; margin-top: 5px; }
+
+        /* --- شبكة الأزرار --- */
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px; }
 
         .btn {
             background: var(--glass);
             border: 1px solid rgba(255,255,255,0.1);
-            padding: 20px 10px;
-            border-radius: 18px;
+            padding: 22px 10px;
+            border-radius: 22px;
             color: #fff;
             text-decoration: none;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             font-weight: 600;
         }
 
-        .btn i { font-size: 1.5rem; color: var(--gold); }
-
-        .reg-full {
+        .btn i { font-size: 1.6rem; color: var(--gold); }
+        
+        /* زر التسجيل العريض */
+        .reg-btn {
             grid-column: span 2;
             background: linear-gradient(135deg, var(--gold), #b8860b);
             color: var(--dark-green) !important;
+            font-weight: 900;
             font-size: 1.4rem;
-            font-weight: 800;
             flex-direction: row;
             justify-content: center;
             gap: 10px;
             border: none;
             animation: pulse 2s infinite;
         }
+        .reg-btn i { color: var(--dark-green) !important; }
+
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
-        .footer { margin-top: 30px; color: var(--gold); font-size: 0.9rem; opacity: 0.7; }
+        .footer { margin-bottom: 30px; color: var(--gold); font-weight: 600; opacity: 0.7; }
     </style>
 </head>
 <body>
-    <div class="bg-glow">
+    <div class="bg-layer">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
     </div>
 
-    <div class="header-rect">
+    <div class="header-box">
         <h1 class="top-title">مسابقة مسجد الحاج أحمد الملهود</h1>
     </div>
 
     <div class="container">
         <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
-        <div class="quran-verse">"قُلْ بِفَضْلِ اللَّهِ وَبِرَحْمَتِهِ فَبِذَلِكَ فَلْيَفْرَحُوا هُوَ خَيْرٌ مِمَّا يَجْمَعُونَ"</div>
+        <p class="quran-verse">"قُلْ بِفَضْلِ اللَّهِ وَبِرَحْمَتِهِ فَبِذَلِكَ فَلْيَفْرَحُوا هُوَ خَيْرٌ مِمَّا يَجْمَعُونَ"</p>
 
         <div id="counterArea" class="timer-card">
-            <div style="color: var(--gold); margin-bottom: 10px; font-size: 0.9rem;">متبقي على انطلاق المسابقة</div>
+            <div style="color: var(--gold); margin-bottom: 15px; font-weight: 600; font-size: 0.9rem;">متبقي على انطلاق المسابقة</div>
             <div class="timer-flex">
-                <div class="timer-box"><span id="days">00</span><div class="timer-label">يوم</div></div>
-                <div class="timer-box"><span id="hours">00</span><div class="timer-label">ساعة</div></div>
-                <div class="timer-box"><span id="minutes">00</span><div class="timer-label">دقيقة</div></div>
-                <div class="timer-box"><span id="seconds">00</span><div class="timer-label">ثانية</div></div>
+                <div class="timer-unit"><span id="days">00</span><div class="timer-label">يوم</div></div>
+                <div class="timer-unit"><span id="hours">00</span><div class="timer-label">ساعة</div></div>
+                <div class="timer-unit"><span id="minutes">00</span><div class="timer-label">دقيقة</div></div>
+                <div class="timer-unit"><span id="seconds">00</span><div class="timer-label">ثانية</div></div>
             </div>
         </div>
 
-        <div class="btn-grid">
-            <a href="register.html" class="btn reg-full"><i class="fas fa-edit"></i> سجل الآن بالمسابقة</a>
-            <a href="levels.html" class="btn"><i class="fas fa-trophy"></i> المستويات</a>
+        <div class="menu-grid">
+            <a href="register.html" class="btn reg-btn"><i class="fas fa-edit"></i> سجل الآن بالمسابقة</a>
             <a href="rules.html" class="btn"><i class="fas fa-scroll"></i> الشروط</a>
-            <a href="schedule.html" class="btn"><i class="fas fa-calendar-alt"></i> المواعيد</a>
+            <a href="levels.html" class="btn"><i class="fas fa-trophy"></i> المستويات</a>
             <a href="status.html" class="btn"><i class="fas fa-user-circle"></i> معلومات الطالب</a>
+            <a href="schedule.html" class="btn"><i class="fas fa-calendar-alt"></i> المواعيد</a>
         </div>
 
         <div class="footer">نحو جيل متقن لكتاب الله تعالى</div>
