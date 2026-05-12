@@ -32,7 +32,7 @@
             overflow-x: hidden;
         }
 
-        /* --- أنيميشن الخلفية "الأحلى" (الضباب النوراني المتحرك) --- */
+        /* --- أنيميشن الخلفية الحية --- */
         .bg-layer {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -40,65 +40,84 @@
             pointer-events: none;
         }
 
+        /* زخرفة إسلامية متحركة */
+        .bg-pattern {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Cpath d="M40 0l40 40-40 40-40-40zm0 10l30 30-30 30-30-30zm0 10l20 20-20 20-20-20z" fill="%23fdb931" fill-opacity="0.03"/%3E%3C/svg%3E');
+            animation: movePattern 60s linear infinite;
+        }
+
+        @keyframes movePattern {
+            from { background-position: 0 0; }
+            to { background-position: 1000px 1000px; }
+        }
+
+        /* دوائر نورانية عائمة */
         .orb {
             position: absolute;
-            background: radial-gradient(circle, rgba(253, 185, 49, 0.15) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(253, 185, 49, 0.1) 0%, transparent 70%);
             border-radius: 50%;
-            filter: blur(60px);
-            animation: moveOrb 15s infinite alternate ease-in-out;
-            opacity: 0.6;
+            filter: blur(40px);
+            animation: moveOrb 20s infinite alternate ease-in-out;
         }
-        /* تم تسريع البداية هنا ليبدأ الأنيميشن فوراً */
-        .orb-1 { width: 400px; height: 400px; top: -100px; left: -100px; animation-duration: 12s; }
-        .orb-2 { width: 350px; height: 350px; bottom: -50px; right: -50px; animation-delay: -2s; animation-duration: 18s; }
+        .orb-1 { width: 300px; height: 300px; top: -50px; left: -50px; }
+        .orb-2 { width: 250px; height: 250px; bottom: 50px; right: -50px; animation-delay: -5s; }
 
         @keyframes moveOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(80px, 120px) scale(1.2); }
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(30px, 60px) scale(1.1); }
         }
 
-        /* الشهب الخفيفة جداً */
+        /* نجوم وشهب متحركة */
+        .stars {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: radial-gradient(#fdb931 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.1;
+        }
+        
         .shooting-star {
             position: absolute;
-            width: 120px; height: 1px;
-            background: linear-gradient(90deg, var(--gold), transparent);
-            opacity: 0;
-            animation: shoot 4s infinite;
-        }
-        .s1 { top: 10%; right: 10%; animation-delay: 0s; }
-        .s2 { top: 40%; right: 30%; animation-delay: 2s; }
-
-        @keyframes shoot {
-            0% { transform: translateX(0) rotate(-45deg); opacity: 0; }
-            10% { opacity: 0.8; }
-            25% { transform: translateX(-300px) translateY(300px) rotate(-45deg); opacity: 0; }
-            100% { opacity: 0; }
+            top: 50%; left: 50%;
+            width: 150px; height: 1px;
+            background: linear-gradient(-45deg, #fdb931, transparent);
+            animation: shooting 3s infinite;
         }
 
-        /* --- المستطيل العلوي المنفصل --- */
+        @keyframes shooting {
+            0% { transform: rotate(-45deg) translateX(-200%); opacity: 0; }
+            10% { opacity: 1; }
+            20% { opacity: 0; }
+            100% { transform: rotate(-45deg) translateX(200%); opacity: 0; }
+        }
+
+        /* --- المستطيل العلوي للعنوان --- */
         .header-box {
             background: var(--glass);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(253, 185, 49, 0.3);
+            border: 1px solid rgba(253, 185, 49, 0.25);
             border-radius: 15px;
             padding: 15px;
             width: 100%;
             max-width: 450px;
             text-align: center;
             margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
 
-        .top-title { color: var(--gold); font-weight: 900; font-size: 1.4rem; margin: 0; text-shadow: 0 0 10px rgba(253,185,49,0.3); }
+        .top-title { color: var(--gold); font-weight: 900; font-size: 1.4rem; margin: 0; }
 
         .container { width: 100%; max-width: 480px; text-align: center; }
         
         .bismillah { font-family: 'Amiri Quran', serif; font-size: 2.8rem; margin: 15px 0; }
-        .quran-verse { font-family: 'Amiri Quran', serif; font-size: 1.3rem; color: #eee; margin-bottom: 25px; line-height: 1.7; }
+
+        .quran-verse { font-family: 'Amiri Quran', serif; font-size: 1.3rem; color: #eee; margin-bottom: 30px; line-height: 1.6; }
         
-        /* --- العداد الأفقي المضبوط --- */
+        /* --- العداد الأفقي --- */
         .timer-card {
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.25);
             border-radius: 20px;
             padding: 20px 10px;
             margin-bottom: 30px;
@@ -106,16 +125,52 @@
         }
 
         .timer-flex { display: flex; justify-content: center; gap: 8px; }
-        .timer-unit { background: rgba(255,255,255,0.05); padding: 15px 5px; border-radius: 15px; flex: 1; border-bottom: 3px solid var(--gold); }
+        
+        .timer-unit { 
+            background: rgba(255,255,255,0.05); 
+            padding: 15px 5px; 
+            border-radius: 15px; 
+            flex: 1; 
+            border-bottom: 3px solid var(--gold); 
+        }
+
         .timer-unit span { font-size: 1.6rem; font-weight: 900; color: var(--gold); display: block; }
         .timer-label { font-size: 0.75rem; color: #bbb; margin-top: 5px; }
 
         /* --- شبكة الأزرار --- */
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-        .btn { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); padding: 20px 10px; border-radius: 20px; color: #fff; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 10px; font-weight: 600; transition: 0.3s; }
-        .btn i { font-size: 1.5rem; color: var(--gold); }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px; }
+
+        .btn {
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 22px 10px;
+            border-radius: 22px;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .btn i { font-size: 1.6rem; color: var(--gold); }
         
-        .reg-btn { grid-column: span 2; background: linear-gradient(135deg, var(--gold), #b8860b); color: var(--dark-green) !important; font-weight: 900; font-size: 1.4rem; flex-direction: row; justify-content: center; gap: 10px; border: none; animation: pulse 2s infinite; }
+        /* زر التسجيل العريض */
+        .reg-btn {
+            grid-column: span 2;
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+            color: var(--dark-green) !important;
+            font-weight: 900;
+            font-size: 1.4rem;
+            flex-direction: row;
+            justify-content: center;
+            gap: 10px;
+            border: none;
+            animation: pulse 2s infinite;
+        }
+        .reg-btn i { color: var(--dark-green) !important; }
+
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
         .footer { margin-bottom: 30px; color: var(--gold); font-weight: 600; opacity: 0.7; }
@@ -123,10 +178,13 @@
 </head>
 <body>
     <div class="bg-layer">
+        <div class="bg-pattern"></div>
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
-        <div class="shooting-star s1"></div>
-        <div class="shooting-star s2"></div>
+        <div class="stars"></div>
+        <div class="shooting-star"></div>
+        <div class="shooting-star" style="top: 20%; left: 80%; animation-delay: 1s;"></div>
+        <div class="shooting-star" style="top: 70%; left: 20%; animation-delay: 2s;"></div>
     </div>
 
     <div class="header-box">
@@ -135,7 +193,7 @@
 
     <div class="container">
         <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
-        <p class="quran-verse">"قُلْ بِفَضْلِ اللَّهِ وَبِرَحْمَتِهِ فَبِذَلِكَ فَلْيَهْرَحُوا هُوَ خَيْرٌ مِمَّا يَجْمَعُونَ"</p>
+        <p class="quran-verse">"قُلْ بِفَضْلِ اللَّهِ وَبِرَحْمَتِهِ فَبِذَلِكَ فَلْيَفْرَحُوا هُوَ خَيْرٌ مِمَّا يَجْمَعُونَ"</p>
 
         <div id="counterArea" class="timer-card">
             <div style="color: var(--gold); margin-bottom: 15px; font-weight: 600; font-size: 0.9rem;">متبقي على انطلاق المسابقة</div>
@@ -154,21 +212,21 @@
             <a href="status.html" class="btn"><i class="fas fa-user-circle"></i> معلومات الطالب</a>
             <a href="schedule.html" class="btn"><i class="fas fa-calendar-alt"></i> المواعيد</a>
         </div>
+
         <div class="footer">نحو جيل متقن لكتاب الله تعالى</div>
     </div>
 
     <script>
         const target = new Date("2026-07-01T00:00:00").getTime();
-        function update() {
+        setInterval(() => {
             const now = new Date().getTime();
             const diff = target - now;
-            if (diff < 0) return;
-            document.getElementById("days").innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
-            document.getElementById("hours").innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
-            document.getElementById("minutes").innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-            document.getElementById("seconds").innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
-        }
-        update(); setInterval(update, 1000);
+            if (diff < 0) return document.getElementById("counterArea").style.display = "none";
+            document.getElementById("days").innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById("hours").innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById("minutes").innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById("seconds").innerText = Math.floor((diff % (1000 * 60)) / 1000);
+        }, 1000);
     </script>
 </body>
 </html>
