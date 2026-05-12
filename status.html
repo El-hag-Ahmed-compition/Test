@@ -35,14 +35,14 @@
             overflow-x: hidden;
         }
 
-        /* --- الخلفية الحية --- */
+        /* --- الخلفية الحية والزخارف --- */
         .bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
         .bg-pattern { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Cpath d="M40 0l40 40-40 40-40-40zm0 10l30 30-30 30-30-30zm0 10l20 20-20 20-20-20z" fill="%23fdb931" fill-opacity="0.03"/%3E%3C/svg%3E'); animation: movePattern 60s linear infinite; }
         @keyframes movePattern { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
         .shooting-star { position: absolute; top: 20%; left: 80%; width: 150px; height: 1px; background: linear-gradient(-45deg, #fdb931, transparent); animation: shooting 3s infinite; opacity: 0; }
         @keyframes shooting { 0% { transform: rotate(-45deg) translateX(-200%); opacity: 0; } 10% { opacity: 1; } 100% { transform: rotate(-45deg) translateX(200%); opacity: 0; } }
 
-        /* --- صندوق البحث --- */
+        /* --- صندوق البحث (ضبط الزرار والمدخل) --- */
         .search-box { 
             width: 100%; 
             max-width: 450px; 
@@ -56,32 +56,41 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
         .title { color: var(--gold); font-size: 1.5rem; margin-bottom: 20px; font-weight: 900; }
-        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        
+        .input-row { 
+            display: flex; 
+            background: rgba(255, 255, 255, 0.95); 
+            border-radius: 12px; 
+            overflow: hidden; 
+            border: 2px solid var(--gold);
+            margin-bottom: 10px;
+        }
+        
         input { 
             flex: 1; 
             padding: 15px; 
-            border-radius: 12px; 
             border: none; 
             text-align: center; 
-            font-size: 1.2rem; 
+            font-size: 1.1rem; 
             font-weight: bold; 
-            background: rgba(255,255,255,0.95);
+            background: transparent;
             color: #333;
+            outline: none;
         }
-        input:focus { outline: 2px solid var(--gold); }
+
         .btn-search { 
-            background: linear-gradient(135deg, var(--gold), #b8860b);
+            background: var(--gold);
             color: var(--dark-green); 
             border: none; 
             padding: 0 25px; 
-            border-radius: 12px; 
             font-weight: 900; 
             cursor: pointer; 
             transition: 0.3s;
+            font-size: 1.1rem;
         }
         .btn-search:active { transform: scale(0.95); }
 
-        /* --- شاشة النتيجة --- */
+        /* --- شاشة عرض النتيجة --- */
         #resultDisplay { 
             display: none; 
             background: rgba(255, 255, 255, 0.98); 
@@ -123,7 +132,7 @@
 
         .back-home { margin-top: 25px; color: var(--gold); text-decoration: none; font-weight: 600; }
 
-        /* --- الكارت الرسمي (مخفي) --- */
+        /* --- الكارت الرسمي (المخفي) --- */
         #hiddenCard { position: absolute; left: -9999px; width: 600px; height: 320px; background-color: white; border: 2px solid var(--gold); overflow: hidden; }
         .c-header { background-color: var(--dark-green); color: var(--gold); padding: 15px; text-align: center; font-weight: 900; font-size: 24px; border-bottom: 5px solid var(--gold); }
         .c-middle { display: flex; padding: 25px; align-items: center; justify-content: space-between; }
@@ -142,8 +151,8 @@
     <div class="search-box">
         <div class="title"><i class="fas fa-search"></i> استعلام عن النتيجة</div>
         <div class="input-row">
-            <input type="text" id="codeInp" placeholder="أدخل كود المتسابق">
             <button class="btn-search" onclick="doSearch()">بحث</button>
+            <input type="text" id="codeInp" placeholder="أدخل كود المتسابق">
         </div>
         <div style="color: #bbb; font-size: 0.8rem; margin-top: 10px;">مثال: A105</div>
     </div>
