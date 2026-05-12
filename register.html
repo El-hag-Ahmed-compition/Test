@@ -171,21 +171,29 @@
             }
         });
 
-        // حط رابط الـ Web App الجديد هنا
+        // رابط الـ Web App بتاعك (لو عملت Deploy جديد في جوجل، تأكد إنك تغير اللينك ده)
         const scriptURL = 'https://script.google.com/macros/s/AKfycbx6r3Hns_oO96TTu-_tFXPTjqHKwUEBk9AE_wNeGPt_YarkKnPUuGqhOG5T1ebWKNZR9g/exec';
 
         form.addEventListener('submit', e => {
             e.preventDefault();
             document.getElementById('submitBtn').disabled = true;
-            document.getElementById('statusMsg').innerText = "جاري حفظ البيانات...";
+            document.getElementById('statusMsg').innerText = "جاري التحقق وحفظ البيانات...";
+            document.getElementById('statusMsg').style.color = "#fff"; // لون أبيض للرسالة العادية
 
             fetch(scriptURL, { method: 'POST', body: new FormData(form)})
             .then(response => response.json())
             .then(data => {
-                if (data.result === 'success' || data.code) {
+                if (data.result === 'success') {
+                    // لو التسجيل نجح ومفيش تكرار
                     form.style.display = 'none';
                     successBox.style.display = 'block';
                     document.getElementById('finalCode').innerText = data.code;
+                } else if (data.result === 'error') {
+                    // لو الاسم متكرر (هنا حل المشكلة)
+                    alert(data.message); 
+                    document.getElementById('submitBtn').disabled = false;
+                    document.getElementById('statusMsg').innerText = data.message;
+                    document.getElementById('statusMsg').style.color = "#ff4d4d"; // لون أحمر للخطأ
                 } else {
                     throw new Error();
                 }
@@ -193,6 +201,7 @@
             .catch(error => {
                 document.getElementById('submitBtn').disabled = false;
                 document.getElementById('statusMsg').innerText = "خطأ! تأكد من اتصال الإنترنت.";
+                document.getElementById('statusMsg').style.color = "#ff4d4d";
             });
         });
     </script>
