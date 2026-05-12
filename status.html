@@ -3,88 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>استعلام عن النتيجة</title>
+    <title>استعلام عن النتيجة | مسجد الملهود</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        body { background-color: #002D04; margin: 0; padding: 10px; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
+        @import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;600;900&display=swap');
         
-        /* صندوق البحث */
-        .search-box { width: 95%; max-width: 400px; border: 2px solid #D4AF37; border-radius: 20px; padding: 20px; margin-top: 30px; text-align: center; }
-        .title { color: #D4AF37; font-size: 22px; margin-bottom: 20px; font-weight: bold; }
-        .input-row { display: flex; gap: 5px; margin-bottom: 20px; }
-        input { flex: 1; padding: 12px; border-radius: 5px; border: none; text-align: center; font-size: 16px; font-weight: bold; }
-        .btn-search { background-color: #D4AF37; color: black; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        :root {
+            --gold: #fdb931;
+            --dark-green: #06301d;
+            --light-green: #0a4d2e;
+            --glass: rgba(255, 255, 255, 0.08);
+        }
 
-        /* شاشة النتيجة (اللي هتظهر للطالب) */
+        * { box-sizing: border-box; }
+
+        body { 
+            background: radial-gradient(circle at center, var(--light-green) 0%, var(--dark-green) 100%);
+            background-attachment: fixed;
+            color: #fff; 
+            font-family: 'Cairo', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        /* --- الخلفية الحية --- */
+        .bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .bg-pattern { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Cpath d="M40 0l40 40-40 40-40-40zm0 10l30 30-30 30-30-30zm0 10l20 20-20 20-20-20z" fill="%23fdb931" fill-opacity="0.03"/%3E%3C/svg%3E'); animation: movePattern 60s linear infinite; }
+        @keyframes movePattern { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
+        .shooting-star { position: absolute; top: 20%; left: 80%; width: 150px; height: 1px; background: linear-gradient(-45deg, #fdb931, transparent); animation: shooting 3s infinite; opacity: 0; }
+        @keyframes shooting { 0% { transform: rotate(-45deg) translateX(-200%); opacity: 0; } 10% { opacity: 1; } 100% { transform: rotate(-45deg) translateX(200%); opacity: 0; } }
+
+        /* --- صندوق البحث --- */
+        .search-box { 
+            width: 100%; 
+            max-width: 450px; 
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(253, 185, 49, 0.25);
+            border-radius: 25px; 
+            padding: 25px; 
+            margin-top: 30px; 
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+        .title { color: var(--gold); font-size: 1.5rem; margin-bottom: 20px; font-weight: 900; }
+        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        input { 
+            flex: 1; 
+            padding: 15px; 
+            border-radius: 12px; 
+            border: none; 
+            text-align: center; 
+            font-size: 1.2rem; 
+            font-weight: bold; 
+            background: rgba(255,255,255,0.95);
+            color: #333;
+        }
+        input:focus { outline: 2px solid var(--gold); }
+        .btn-search { 
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+            color: var(--dark-green); 
+            border: none; 
+            padding: 0 25px; 
+            border-radius: 12px; 
+            font-weight: 900; 
+            cursor: pointer; 
+            transition: 0.3s;
+        }
+        .btn-search:active { transform: scale(0.95); }
+
+        /* --- شاشة النتيجة --- */
         #resultDisplay { 
             display: none; 
-            background-color: white; 
-            border-radius: 15px; 
+            background: rgba(255, 255, 255, 0.98); 
+            border-radius: 20px; 
             padding: 25px; 
             text-align: right; 
-            width: 95%; 
-            max-width: 400px; 
-            margin-top: 20px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            box-sizing: border-box;
+            width: 100%; 
+            max-width: 450px; 
+            margin-top: 25px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            color: #333;
+            animation: fadeIn 0.5s ease;
         }
-        .st-name { font-size: 22px; font-weight: bold; color: black; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .st-info { color: #333; margin-bottom: 10px; font-size: 17px; font-weight: bold; }
-        .green-txt { color: #28a745; }
-        .blue-txt { color: #007bff; }
-        .gold-txt { color: #D4AF37; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* الزرار الأخضر للتحميل */
+        .st-name { font-size: 1.4rem; font-weight: 900; color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .st-info { margin-bottom: 12px; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; }
+        .green-txt { color: #1e7e34; font-weight: 900; }
+        .blue-txt { color: #0056b3; font-weight: 900; }
+        .gold-txt { color: #b8860b; font-weight: 900; }
+
         .btn-download { 
-            background-color: #002D04; 
-            color: #D4AF37; 
+            background-color: var(--dark-green); 
+            color: var(--gold); 
             width: 100%; 
             padding: 15px; 
             border: none; 
-            border-radius: 5px; 
-            font-weight: bold; 
-            font-size: 16px; 
+            border-radius: 12px; 
+            font-weight: 900; 
+            font-size: 1.1rem; 
             margin-top: 20px; 
             cursor: pointer; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             gap: 10px; 
+            transition: 0.3s;
         }
 
-        /* --- الكارت الرسمي (مخفي تماماً عن الطالب) --- */
-        #hiddenCard { position: absolute; left: -9999px; width: 600px; height: 300px; background-color: white; }
-        .c-header { background-color: #002D04; color: #D4AF37; padding: 10px; text-align: center; font-weight: bold; font-size: 22px; border-bottom: 4px solid #D4AF37; }
-        .c-middle { display: flex; padding: 20px; align-items: center; justify-content: space-between; }
-        .c-data { text-align: right; color: black; font-size: 18px; font-weight: bold; line-height: 1.8; width: 65%; }
-        .c-qrcode { width: 140px; height: 140px; border: 2px solid #002D04; }
-        .c-footer { background-color: #D4AF37; color: black; padding: 8px; text-align: center; font-weight: bold; font-size: 16px; position: absolute; bottom: 0; width: 100%; }
+        .back-home { margin-top: 25px; color: var(--gold); text-decoration: none; font-weight: 600; }
+
+        /* --- الكارت الرسمي (مخفي) --- */
+        #hiddenCard { position: absolute; left: -9999px; width: 600px; height: 320px; background-color: white; border: 2px solid var(--gold); overflow: hidden; }
+        .c-header { background-color: var(--dark-green); color: var(--gold); padding: 15px; text-align: center; font-weight: 900; font-size: 24px; border-bottom: 5px solid var(--gold); }
+        .c-middle { display: flex; padding: 25px; align-items: center; justify-content: space-between; }
+        .c-data { text-align: right; color: black; font-size: 20px; font-weight: 900; line-height: 1.8; width: 65%; }
+        .c-qrcode { width: 150px; height: 150px; border: 3px solid var(--dark-green); padding: 5px; }
+        .c-footer { background: var(--gold); color: black; padding: 10px; text-align: center; font-weight: 900; font-size: 16px; position: absolute; bottom: 0; width: 100%; }
     </style>
 </head>
 <body>
 
+    <div class="bg-layer">
+        <div class="bg-pattern"></div>
+        <div class="shooting-star"></div>
+    </div>
+
     <div class="search-box">
-        <div class="title">استعلام عن نتيجة</div>
+        <div class="title"><i class="fas fa-search"></i> استعلام عن النتيجة</div>
         <div class="input-row">
+            <input type="text" id="codeInp" placeholder="أدخل كود المتسابق">
             <button class="btn-search" onclick="doSearch()">بحث</button>
-            <input type="text" id="codeInp" placeholder="">
         </div>
+        <div style="color: #bbb; font-size: 0.8rem; margin-top: 10px;">مثال: A105</div>
     </div>
 
     <div id="resultDisplay">
         <div class="st-name" id="resName"></div>
         <div class="st-info">المستوى: <span id="resLevel"></span></div>
-        <div class="st-info">الكود: <span class="gold-txt" id="resCode"></span></div>
-        <div class="st-info">المرحلة الأولى: <span class="green-txt" id="resS1"></span></div>
-        <div class="st-info">المرحلة الثانية: <span class="blue-txt" id="resS2"></span></div>
+        <div class="st-info">الكود الخاص بك: <span class="gold-txt" id="resCode"></span></div>
+        <div class="st-info">نتيجة المرحلة الأولى: <span class="green-txt" id="resS1"></span></div>
+        <div class="st-info">نتيجة المرحلة الثانية: <span class="blue-txt" id="resS2"></span></div>
 
         <button class="btn-download" onclick="downloadImage()">
-            تحميل الكارت ⬇️
+            <i class="fas fa-id-card"></i> تحميل بطاقة المتسابق (PNG)
         </button>
     </div>
+
+    <a href="index.html" class="back-home"><i class="fas fa-home"></i> العودة للرئيسية</a>
 
     <div id="hiddenCard">
         <div class="c-header">بطاقة متسابق | مسجد الحاج أحمد الملهود</div>
@@ -92,45 +168,48 @@
             <div id="qrPlace" class="c-qrcode"></div>
             <div class="c-data">
                 <div>الاسم: <span id="cName"></span></div>
-                <div>النوع: ذكر</div>
                 <div>المستوى: <span id="cLevel"></span></div>
-                <div style="color:#D4AF37">الكود: <span id="cCode"></span></div>
+                <div style="color:#b8860b">الكود الرقمي: <span id="cCode"></span></div>
             </div>
         </div>
-        <div class="c-footer">يرجى إبراز الكارت عند دخول الاختبارات</div>
+        <div class="c-footer">يرجى إظهار هذه البطاقة للمشرف عند دخول الاختبارات</div>
     </div>
 
     <script>
         function doSearch() {
-            const code = document.getElementById('codeInp').value;
+            const code = document.getElementById('codeInp').value.trim();
             const scriptURL = "https://script.google.com/macros/s/AKfycbznMFgTerw3GS-8uzqef-uVy0Ul1eqTalHzqe6qOLf1GM9YptBdnFirJcX8TC2lqJ0FPA/exec"; 
 
-            if(!code) return alert("دخل الكود الأول!");
+            if(!code) return alert("من فضلك أدخل الكود أولاً!");
+
+            document.querySelector('.btn-search').innerText = "...";
 
             fetch(`${scriptURL}?action=checkStatus&code=${code}`)
             .then(res => res.json())
             .then(data => {
+                document.querySelector('.btn-search').innerText = "بحث";
                 if(data.status === "found") {
-                    // 1. ملء بيانات شاشة النتيجة
                     document.getElementById('resName').innerText = data.name;
                     document.getElementById('resLevel').innerText = data.level;
                     document.getElementById('resCode').innerText = code;
                     document.getElementById('resS1').innerText = data.score1 || "قيد المراجعة";
                     document.getElementById('resS2').innerText = data.score2 || "قيد الانتظار";
 
-                    // 2. ملء بيانات الكارت المخفي
                     document.getElementById('cName').innerText = data.name;
                     document.getElementById('cLevel').innerText = data.level;
                     document.getElementById('cCode').innerText = code;
                     
-                    // توليد QR الكارت
-                    $('#qrPlace').empty().qrcode({ text: code, foreground: "#002D04", width: 140, height: 140 });
+                    $('#qrPlace').empty().qrcode({ text: code, foreground: "#06301d", width: 150, height: 150 });
 
-                    // إظهار النتيجة للطالب
                     document.getElementById('resultDisplay').style.display = "block";
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                 } else {
-                    alert("عفواً.. الكود غير موجود!");
+                    alert("عفواً.. الكود غير موجود بقاعدة البيانات!");
                 }
+            })
+            .catch(err => {
+                alert("خطأ في الاتصال بالخادم!");
+                document.querySelector('.btn-search').innerText = "بحث";
             });
         }
 
@@ -140,7 +219,7 @@
 
             html2canvas(card, { scale: 3 }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `كارت_${student}.png`;
+                link.download = `كارت_المتسابق_${student}.png`;
                 link.href = canvas.toDataURL("image/png");
                 link.click();
             });
