@@ -28,7 +28,6 @@
             padding: 20px;
         }
 
-        /* --- الخلفية الحية --- */
         .bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
         .bg-pattern { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Cpath d="M40 0l40 40-40 40-40-40zm0 10l30 30-30 30-30-30zm0 10l20 20-20 20-20-20z" fill="%23fdb931" fill-opacity="0.03"/%3E%3C/svg%3E'); animation: movePattern 60s linear infinite; }
         @keyframes movePattern { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
@@ -36,7 +35,6 @@
         .container { width: 100%; max-width: 800px; z-index: 1; }
         h1 { color: var(--gold); text-align: center; font-weight: 900; margin-bottom: 30px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
 
-        /* --- ستايل الكروت --- */
         .schedule-card {
             background: var(--glass);
             backdrop-filter: blur(15px);
@@ -58,13 +56,20 @@
             font-size: 1.1rem;
         }
 
-        /* --- الجدول --- */
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: right; min-width: 500px; }
         th { color: var(--gold); border-bottom: 2px solid var(--gold); padding: 15px 10px; font-size: 1.1rem; }
         td { padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 600; }
         
-        .date-range { color: var(--gold); font-family: 'Cairo', sans-serif; font-weight: 900; }
+        /* ضبط الأرقام عشان متتعكسش */
+        .date-range { 
+            color: var(--gold); 
+            font-family: 'Cairo', sans-serif; 
+            font-weight: 900; 
+            display: inline-block;
+            direction: ltr; /* لعرض التاريخ من اليسار لليمين بشكل سليم */
+            unicode-bidi: bidi-override;
+        }
         
         .reg-box {
             border-right: 5px solid var(--gold);
@@ -82,9 +87,7 @@
             text-decoration: none;
             font-weight: 900;
             font-size: 1.2rem;
-            transition: 0.3s;
         }
-        .back-home:hover { opacity: 0.8; }
 
         @media (max-width: 600px) {
             th, td { font-size: 0.9rem; padding: 10px 5px; }
@@ -117,11 +120,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>الأول</td><td>القرآن كاملاً</td><td class="date-range">1/7 - 3/7</td></tr>
-                        <tr><td>الثاني</td><td>نصف القرآن</td><td class="date-range">4/7 - 6/7</td></tr>
-                        <tr><td>الثالث</td><td>ثلث القرآن</td><td class="date-range">7/7 - 9/7</td></tr>
-                        <tr><td>الرابع</td><td>ربع القرآن</td><td class="date-range">10/7 - 12/7</td></tr>
-                        <tr><td>الخامس</td><td>5 أجزاء</td><td class="date-range">13/7 - 15/7</td></tr>
+                        <tr><td>الأول</td><td>القرآن كاملاً</td><td><span class="date-range">1/7 - 3/7</span></td></tr>
+                        <tr><td>الثاني</td><td>نصف القرآن</td><td><span class="date-range">4/7 - 6/7</span></td></tr>
+                        <tr><td>الثالث</td><td>ثلث القرآن</td><td><span class="date-range">7/7 - 9/7</span></td></tr>
+                        <tr><td>الرابع</td><td>ربع القرآن</td><td><span class="date-range">10/7 - 12/7</span></td></tr>
+                        <tr><td>الخامس</td><td>5 أجزاء</td><td><span class="date-range">13/7 - 15/7</span></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -139,11 +142,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>الأول</td><td>القرآن كاملاً</td><td class="date-range">19/7 - 21/7</td></tr>
-                        <tr><td>الثاني</td><td>نصف القرآن</td><td class="date-range">22/7 - 24/7</td></tr>
-                        <tr><td>الثالث</td><td>ثلث القرآن</td><td class="date-range">25/7 - 27/7</td></tr>
-                        <tr><td>الرابع</td><td>ربع القرآن</td><td class="date-range">28/7 - 30/7</td></tr>
-                        <tr><td>الخامس</td><td>5 أجزاء</td><td class="date-range">31/7 - 2/8</td></tr>
+                        <tr><td>الأول</td><td>القرآن كاملاً</td><td><span class="date-range">19/7 - 21/7</span></td></tr>
+                        <tr><td>الثاني</td><td>نصف القرآن</td><td><span class="date-range">22/7 - 24/7</span></td></tr>
+                        <tr><td>الثالث</td><td>ثلث القرآن</td><td><span class="date-range">25/7 - 27/7</span></td></tr>
+                        <tr><td>الرابع</td><td>ربع القرآن</td><td><span class="date-range">28/7 - 30/7</span></td></tr>
+                        <tr><td>الخامس</td><td>5 أجزاء</td><td><span class="date-range">31/7 - 2/8</span></td></tr>
                     </tbody>
                 </table>
             </div>
