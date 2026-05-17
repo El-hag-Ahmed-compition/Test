@@ -20,7 +20,7 @@
             --card-bg: rgba(255, 255, 255, 0.98);
         }
 
-        * { box-sizing: border-box; transition: all 0.3s ease; }
+        * { box-sizing: border-box; transition: all 0.25s ease; }
 
         body { 
             background: radial-gradient(circle at center, var(--light-green) 0%, var(--dark-green) 100%);
@@ -103,7 +103,7 @@
         .btn-search:hover { background: #ffca5c; }
         .btn-search:active { transform: scale(0.96); }
 
-        /* --- شاشة عرض البيانات الاحترافية الجديدة --- */
+        /* --- شاشة عرض البيانات الاحترافية --- */
         #resultDisplay { 
             display: none; 
             background: var(--card-bg); 
@@ -126,7 +126,6 @@
             margin-bottom: 25px; 
             padding-bottom: 15px; 
             border-bottom: 2px dashed #e0e0e0;
-            position: relative;
         }
         
         .info-grid {
@@ -148,46 +147,52 @@
         .info-value.level-color { color: #c48c02; font-weight: 900; }
         .info-value.code-color { color: var(--dark-green); font-weight: 900; font-family: monospace; font-size: 1.3rem; }
 
-        /* كروت النتائج والمراحل الذكية */
-        .stage-box {
-            background: #f8f9fa;
-            border-radius: 20px;
-            padding: 18px;
-            margin-bottom: 15px;
-            border: 1px solid #eee;
+        /* --- تعديل المراحل لتصبح أزرار تفاعلية صريحة وجميلة --- */
+        .stage-btn {
+            width: 100%;
+            background: #ffffff;
+            border: 2px solid var(--dark-green);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            cursor: pointer;
+            text-align: right;
+            outline: none;
+            user-select: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
             position: relative;
-            overflow: hidden;
         }
-        .stage-box::before {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 0;
-            height: 100%;
-            width: 6px;
-            background: #ccc;
+        
+        /* تأثيرات حركة الأزرار عند التفاعل والضغط */
+        .stage-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 15px rgba(6, 48, 29, 0.1);
         }
+        .stage-btn:active { 
+            transform: translateY(1px); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
         .stage-info { text-align: right; }
-        .stage-title { font-size: 1.05rem; font-weight: 700; color: #444; margin-bottom: 4px; }
-        .stage-status { font-size: 1.15rem; font-weight: 900; color: #666; }
-        .stage-icon { font-size: 1.8rem; color: #ccc; opacity: 0.8; }
+        .stage-title { font-size: 1.05rem; font-weight: 700; color: var(--dark-green); margin-bottom: 4px; }
+        .stage-status { font-size: 1.2rem; font-weight: 900; color: #666; }
+        .stage-icon { font-size: 1.8rem; color: #ccc; }
 
-        /* حالات الألوان الذكية للمراحل تلقائياً بالكود */
-        .status-review::before { background: #007bff; }
-        .status-review .stage-status { color: #007bff; }
-        .status-review .stage-icon { color: #007bff; }
+        /* حالات الأزرار التفاعلية الذكية المعتمدة على النتيجة */
+        .btn-status-review { border-color: #007bff !important; background-color: rgba(0, 123, 255, 0.02); }
+        .btn-status-review .stage-status, .btn-status-review .stage-icon { color: #007bff; }
 
-        .status-success::before { background: #1e7e34; }
-        .status-success .stage-status { color: #1e7e34; }
-        .status-success .stage-icon { color: #1e7e34; }
+        .btn-status-success { border-color: #1e7e34 !important; background-color: rgba(30, 126, 52, 0.02); }
+        .btn-status-success .stage-status, .btn-status-success .stage-icon { color: #1e7e34; }
 
-        .status-fail::before { background: #dc3545; }
-        .status-fail .stage-status { color: #dc3545; }
-        .status-fail .stage-icon { color: #dc3545; }
+        .btn-status-fail { border-color: #dc3545 !important; background-color: rgba(220, 53, 69, 0.02); }
+        .btn-status-fail .stage-status, .btn-status-fail .stage-icon { color: #dc3545; }
 
+
+        /* زر تحميل البطاقة */
         .btn-download { 
             background: linear-gradient(135deg, var(--dark-green) 0%, var(--light-green) 100%);
             color: var(--gold); 
@@ -197,7 +202,7 @@
             border-radius: 16px; 
             font-weight: 700; 
             font-size: 1.15rem; 
-            margin-top: 15px; 
+            margin-top: 20px; 
             cursor: pointer; 
             display: flex; 
             align-items: center; 
@@ -249,21 +254,21 @@
             </div>
         </div>
 
-        <div class="stage-box" id="boxStage1">
+        <button class="stage-btn" id="btnStage1">
             <div class="stage-info">
-                <div class="stage-title">المرحلة الأولى الاختبار المبدئي</div>
+                <div class="stage-title">نتيجة المرحلة الأولى</div>
                 <div class="stage-status" id="resS1"></div>
             </div>
             <div class="stage-icon" id="iconStage1"><i class="fas fa-hourglass-half"></i></div>
-        </div>
+        </button>
 
-        <div class="stage-box" id="boxStage2">
+        <button class="stage-btn" id="btnStage2">
             <div class="stage-info">
-                <div class="stage-title">المرحلة الثانية الاختبار النهائي</div>
+                <div class="stage-title">نتيجة المرحلة الثانية</div>
                 <div class="stage-status" id="resS2"></div>
             </div>
             <div class="stage-icon" id="iconStage2"><i class="fas fa-lock"></i></div>
-        </div>
+        </button>
 
         <button class="btn-download" onclick="downloadImage()">
             <i class="fas fa-cloud-download-alt"></i> تحميل بطاقة المتسابق الرسمية (PNG)
@@ -288,8 +293,7 @@
     <script>
         function doSearch() {
             const code = document.getElementById('codeInp').value.trim();
-            // رابط الـ Web App الخاص بك على جوجل سكربت
-            const scriptURL = "https://script.google.com/macros/s/AKfycbzbpuNEt0KkmawDHtybenz-1K7SGSiz1Ao-gnIoCcn8QiIht8GDJ7wuRj5AyUx6pv9fBA/exec"; 
+            const scriptURL = "https://script.google.com/macros/s/AKfycbznMFgTerw3GS-8uzqef-uVy0Ul1eqTalHzqe6qOLf1GM9YptBdnFirJcX8TC2lqJ0FPA/exec"; 
 
             if(!code) return alert("من فضلك أدخل كود المتسابق أولاً!");
 
@@ -300,7 +304,6 @@
             .then(data => {
                 document.querySelector('.btn-search').innerText = "دخول";
                 if(data.status === "found") {
-                    // ملء البيانات المكتوبة الأساسية
                     document.getElementById('resName').innerText = data.name;
                     document.getElementById('resLevel').innerText = data.level;
                     document.getElementById('resCode').innerText = code;
@@ -311,39 +314,39 @@
                     document.getElementById('resS1').innerText = s1;
                     document.getElementById('resS2').innerText = s2;
 
-                    // --- إدارة ألوان وأيقونات كارت المرحلة الأولى تلقائياً ---
-                    const b1 = document.getElementById('boxStage1');
+                    // --- إدارة ألوان وتفاعل زر المرحلة الأولى تلقائياً ---
+                    const b1 = document.getElementById('btnStage1');
                     const i1 = document.getElementById('iconStage1');
-                    b1.className = "stage-box"; // تصفية كلاسات قديمة
+                    b1.className = "stage-btn"; // تصفية الكلاسات السابقة
                     
                     if(s1.includes("مبارك") || s1.includes("مؤهل")) {
-                        b1.classList.add("status-success");
+                        b1.classList.add("btn-status-success");
                         i1.innerHTML = '<i class="fas fa-check-circle"></i>';
                     } else if(s1.includes("للأسف") || s1.includes("غير مؤهل")) {
-                        b1.classList.add("status-fail");
+                        b1.classList.add("btn-status-fail");
                         i1.innerHTML = '<i class="fas fa-times-circle"></i>';
                     } else {
-                        b1.classList.add("status-review");
+                        b1.classList.add("btn-status-review");
                         i1.innerHTML = '<i class="fas fa-hourglass-half"></i>';
                     }
 
-                    // --- إدارة ألوان وأيقونات كارت المرحلة الثانية تلقائياً ---
-                    const b2 = document.getElementById('boxStage2');
+                    // --- إدارة ألوان وتفاعل زر المرحلة الثانية تلقائياً ---
+                    const b2 = document.getElementById('btnStage2');
                     const i2 = document.getElementById('iconStage2');
-                    b2.className = "stage-box"; // تصفية كلاسات قديمة
+                    b2.className = "stage-btn"; // تصفية الكلاسات السابقة
                     
                     if(s2.includes("مبارك") || s2.includes("مؤهل") || (s2 !== "لم تبدأ بعد" && !s2.includes("مغلق"))) {
-                        b2.classList.add("status-success");
+                        b2.classList.add("btn-status-success");
                         i2.innerHTML = '<i class="fas fa-trophy"></i>';
                     } else if(s2.includes("مغلق") || s2.includes("للأسف")) {
-                        b2.classList.add("status-fail");
+                        b2.classList.add("btn-status-fail");
                         i2.innerHTML = '<i class="fas fa-lock"></i>';
                     } else {
-                        b2.classList.add("status-review");
+                        b2.classList.add("btn-status-review");
                         i2.innerHTML = '<i class="fas fa-clock"></i>';
                     }
 
-                    // ملء بيانات الكارت المخفي وإعادة بناء الـ QR Code
+                    // ملء بيانات كارت التحميل والـ QR Code
                     document.getElementById('cName').innerText = data.name;
                     document.getElementById('cLevel').innerText = data.level;
                     document.getElementById('cCode').innerText = code;
@@ -379,3 +382,4 @@
     </script>
 </body>
 </html>
+١
