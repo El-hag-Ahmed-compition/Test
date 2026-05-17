@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>استعلام عن النتيجة | مسجد الملهود</title>
+    <title>بوّابة المتسابق الرقمية | مسجد الملهود</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;600;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;600;700;900&display=swap');
         
         :root {
             --gold: #fdb931;
             --dark-green: #06301d;
             --light-green: #0a4d2e;
             --glass: rgba(255, 255, 255, 0.08);
+            --card-bg: rgba(255, 255, 255, 0.98);
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; transition: all 0.3s ease; }
 
         body { 
             background: radial-gradient(circle at center, var(--light-green) 0%, var(--dark-green) 100%);
@@ -31,195 +32,245 @@
             flex-direction: column; 
             align-items: center; 
             min-height: 100vh; 
-            padding: 15px;
+            padding: 20px 15px;
             overflow-x: hidden;
         }
 
         /* --- الخلفية الحية والزخارف --- */
         .bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-        .bg-pattern { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Cpath d="M40 0l40 40-40 40-40-40zm0 10l30 30-30 30-30-30zm0 10l20 20-20 20-20-20z" fill="%23fdb931" fill-opacity="0.03"/%3E%3C/svg%3E'); animation: movePattern 60s linear infinite; }
+        .bg-pattern { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Cpath d="M40 0l40 40-40 40-40-40zm0 10l30 30-30 30-30-30zm0 10l20 20-20 20-20-20z" fill="%23fdb931" fill-opacity="0.04"/%3E%3C/svg%3E'); animation: movePattern 60s linear infinite; }
         @keyframes movePattern { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
-        .shooting-star { position: absolute; top: 20%; left: 80%; width: 150px; height: 1px; background: linear-gradient(-45deg, #fdb931, transparent); animation: shooting 3s infinite; opacity: 0; }
-        @keyframes shooting { 0% { transform: rotate(-45deg) translateX(-200%); opacity: 0; } 10% { opacity: 1; } 100% { transform: rotate(-45deg) translateX(200%); opacity: 0; } }
 
-        /* --- صندوق البحث --- */
+        /* --- صندوق الاستعلام الفخم --- */
         .search-box { 
             width: 100%; 
-            max-width: 450px; 
+            max-width: 480px; 
             background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(253, 185, 49, 0.25);
-            border-radius: 25px; 
-            padding: 25px; 
-            margin-top: 30px; 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(253, 185, 49, 0.3);
+            border-radius: 30px; 
+            padding: 30px 25px; 
+            margin-top: 20px; 
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        .title { color: var(--gold); font-size: 1.5rem; margin-bottom: 20px; font-weight: 900; }
+        
+        .title { 
+            color: var(--gold); 
+            font-size: 1.6rem; 
+            margin-bottom: 25px; 
+            font-weight: 900; 
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
         
         .input-row { 
             display: flex; 
-            background: rgba(255, 255, 255, 0.95); 
-            border-radius: 12px; 
+            background: rgba(255, 255, 255, 0.98); 
+            border-radius: 15px; 
             overflow: hidden; 
             border: 2px solid var(--gold);
-            margin-bottom: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
         
         input { 
             flex: 1; 
-            padding: 15px; 
+            padding: 16px; 
             border: none; 
             text-align: center; 
-            font-size: 1.1rem; 
-            font-weight: bold; 
+            font-size: 1.2rem; 
+            font-weight: 700; 
             background: transparent;
-            color: #333;
+            color: var(--dark-green);
             outline: none;
         }
+        input::placeholder { color: #999; font-weight: 400; }
 
         .btn-search { 
             background: var(--gold);
             color: var(--dark-green); 
             border: none; 
-            padding: 0 25px; 
+            padding: 0 30px; 
             font-weight: 900; 
             cursor: pointer; 
-            transition: 0.3s;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
         }
-        .btn-search:active { transform: scale(0.95); }
+        .btn-search:hover { background: #ffca5c; }
+        .btn-search:active { transform: scale(0.96); }
 
-        /* --- شاشة عرض النتيجة --- */
+        /* --- شاشة عرض البيانات الاحترافية الجديدة --- */
         #resultDisplay { 
             display: none; 
-            background: rgba(255, 255, 255, 0.98); 
-            border-radius: 20px; 
-            padding: 25px; 
-            text-align: right; 
+            background: var(--card-bg); 
+            border-radius: 28px; 
+            padding: 30px 25px; 
             width: 100%; 
-            max-width: 450px; 
-            margin-top: 25px; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-            color: #333;
-            animation: fadeIn 0.5s ease;
+            max-width: 480px; 
+            margin-top: 30px; 
+            box-shadow: 0 25px 55px rgba(0,0,0,0.6);
+            color: #222;
+            animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        .st-name { font-size: 1.4rem; font-weight: 900; color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .st-info { margin-bottom: 12px; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
-        .green-txt { color: #1e7e34; font-weight: 900; }
-        .blue-txt { color: #0056b3; font-weight: 900; }
-        .gold-txt { color: #b8860b; font-weight: 900; }
-
-        /* --- ستايل أزرار المراحل (المرحلة الأولى والثانية) --- */
-        .tabs-container {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0 15px 0;
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid var(--dark-green);
-            border-radius: 10px;
-            font-weight: 900;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s ease;
-            font-family: 'Cairo', sans-serif;
+        .st-name { 
+            font-size: 1.55rem; 
+            font-weight: 900; 
+            color: var(--dark-green); 
             text-align: center;
-            background-color: white;
-            color: var(--dark-green);
+            margin-bottom: 25px; 
+            padding-bottom: 15px; 
+            border-bottom: 2px dashed #e0e0e0;
+            position: relative;
         }
-        /* كلاس التفعيل للزرار لما ينضغط عليه */
-        .tab-btn.active {
-            background-color: var(--dark-green);
-            color: var(--gold);
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
         }
-        .tab-btn:active { transform: scale(0.97); }
 
-        /* صندوق النتيجة يظهر بشكل منبثق عند الضغط على أي زرار */
-        .score-box {
-            display: none; /* مخفي في البداية لحد ما يضغط على زرار */
-            background: #f1f3f5;
-            padding: 15px;
-            border-radius: 12px;
-            border-right: 5px solid var(--dark-green);
+        .info-card {
+            background: #f8f9fa;
+            border: 1px solid #eaeaea;
+            border-radius: 16px;
+            padding: 12px 15px;
+            text-align: center;
+        }
+        .info-label { font-size: 0.85rem; color: #777; margin-bottom: 5px; font-weight: 600; }
+        .info-value { font-size: 1.15rem; font-weight: 700; color: #333; }
+        .info-value.level-color { color: #c48c02; font-weight: 900; }
+        .info-value.code-color { color: var(--dark-green); font-weight: 900; font-family: monospace; font-size: 1.3rem; }
+
+        /* كروت النتائج والمراحل الذكية */
+        .stage-box {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 18px;
             margin-bottom: 15px;
-            min-height: 55px;
+            border: 1px solid #eee;
+            display: flex;
             align-items: center;
             justify-content: space-between;
-            animation: fadeIn 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        .score-title { font-weight: bold; color: #555; }
+        .stage-box::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 6px;
+            background: #ccc;
+        }
+        .stage-info { text-align: right; }
+        .stage-title { font-size: 1.05rem; font-weight: 700; color: #444; margin-bottom: 4px; }
+        .stage-status { font-size: 1.15rem; font-weight: 900; color: #666; }
+        .stage-icon { font-size: 1.8rem; color: #ccc; opacity: 0.8; }
+
+        /* حالات الألوان الذكية للمراحل تلقائياً بالكود */
+        .status-review::before { background: #007bff; }
+        .status-review .stage-status { color: #007bff; }
+        .status-review .stage-icon { color: #007bff; }
+
+        .status-success::before { background: #1e7e34; }
+        .status-success .stage-status { color: #1e7e34; }
+        .status-success .stage-icon { color: #1e7e34; }
+
+        .status-fail::before { background: #dc3545; }
+        .status-fail .stage-status { color: #dc3545; }
+        .status-fail .stage-icon { color: #dc3545; }
 
         .btn-download { 
-            background-color: var(--dark-green); 
+            background: linear-gradient(135deg, var(--dark-green) 0%, var(--light-green) 100%);
             color: var(--gold); 
             width: 100%; 
-            padding: 15px; 
+            padding: 16px; 
             border: none; 
-            border-radius: 12px; 
-            font-weight: 900; 
-            font-size: 1.1rem; 
-            margin-top: 10px; 
+            border-radius: 16px; 
+            font-weight: 700; 
+            font-size: 1.15rem; 
+            margin-top: 15px; 
             cursor: pointer; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            gap: 10px; 
-            transition: 0.3s;
+            gap: 12px; 
+            box-shadow: 0 10px 20px rgba(6, 48, 29, 0.25);
         }
+        .btn-download:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(6, 48, 29, 0.4); }
+        .btn-download:active { transform: translateY(0); }
 
-        .back-home { margin-top: 25px; color: var(--gold); text-decoration: none; font-weight: 600; }
+        .back-home { margin-top: 30px; color: var(--gold); text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 8px; font-size: 1.05rem; }
+        .back-home:hover { text-shadow: 0 0 10px rgba(253,185,49,0.5); }
 
-        /* --- الكارت الرسمي (المخفي) --- */
+        /* --- الكارت الرسمي للمتسابق (المخفي عند التحميل) --- */
         #hiddenCard { position: absolute; left: -9999px; width: 600px; height: 320px; background-color: white; border: 2px solid var(--gold); overflow: hidden; }
-        .c-header { background-color: var(--dark-green); color: var(--gold); padding: 15px; text-align: center; font-weight: 900; font-size: 24px; border-bottom: 5px solid var(--gold); }
+        .c-header { background-color: var(--dark-green); color: var(--gold); padding: 15px; text-align: center; font-weight: 900; font-size: 24px; border-bottom: 5px solid var(--gold); font-family: 'Cairo', sans-serif; }
         .c-middle { display: flex; padding: 25px; align-items: center; justify-content: space-between; }
-        .c-data { text-align: right; color: black; font-size: 20px; font-weight: 900; line-height: 1.8; width: 65%; }
+        .c-data { text-align: right; color: black; font-size: 20px; font-weight: 900; line-height: 1.8; width: 65%; font-family: 'Cairo', sans-serif; }
         .c-qrcode { width: 150px; height: 150px; border: 3px solid var(--dark-green); padding: 5px; }
-        .c-footer { background: var(--gold); color: black; padding: 10px; text-align: center; font-weight: 900; font-size: 16px; position: absolute; bottom: 0; width: 100%; }
+        .c-footer { background: var(--gold); color: black; padding: 10px; text-align: center; font-weight: 900; font-size: 16px; position: absolute; bottom: 0; width: 100%; font-family: 'Cairo', sans-serif; }
     </style>
 </head>
 <body>
 
     <div class="bg-layer">
         <div class="bg-pattern"></div>
-        <div class="shooting-star"></div>
     </div>
 
     <div class="search-box">
-        <div class="title"><i class="fas fa-search"></i> استعلام عن النتيجة</div>
+        <div class="title"><i class="fas fa-id-card-alt"></i> بوّابة المتسابق الرقمية</div>
         <div class="input-row">
-            <button class="btn-search" onclick="doSearch()">بحث</button>
-            <input type="text" id="codeInp" placeholder="أدخل كود المتسابق">
+            <button class="btn-search" onclick="doSearch()">دخول</button>
+            <input type="text" id="codeInp" placeholder="أدخل كود المتسابق الرقمي">
         </div>
-        <div style="color: #bbb; font-size: 0.8rem; margin-top: 10px;">مثال: A105</div>
+        <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-top: 12px; font-weight: 600;">مثال على الكود: 11001</div>
     </div>
 
     <div id="resultDisplay">
         <div class="st-name" id="resName"></div>
-        <div class="st-info">المستوى: <span id="resLevel" class="gold-txt"></span></div>
-        <div class="st-info">الكود الخاص بك: <span class="gold-txt" id="resCode"></span></div>
         
-        <div class="tabs-container">
-            <button id="tab1" class="tab-btn" onclick="showStage(1)">نتيجة المرحلة الأولى</button>
-            <button id="tab2" class="tab-btn" onclick="showStage(2)">نتيجة المرحلة الثانية</button>
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-label">المستوى الحالي</div>
+                <div class="info-value level-color" id="resLevel"></div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">كود المتسابق</div>
+                <div class="info-value code-color" id="resCode"></div>
+            </div>
         </div>
 
-        <div id="scoreBox" class="score-box">
-            <span class="score-title" id="stageTitle">الحالة:</span>
-            <span id="dynamicScore"></span>
+        <div class="stage-box" id="boxStage1">
+            <div class="stage-info">
+                <div class="stage-title">المرحلة الأولى الاختبار المبدئي</div>
+                <div class="stage-status" id="resS1"></div>
+            </div>
+            <div class="stage-icon" id="iconStage1"><i class="fas fa-hourglass-half"></i></div>
+        </div>
+
+        <div class="stage-box" id="boxStage2">
+            <div class="stage-info">
+                <div class="stage-title">المرحلة الثانية الاختبار النهائي</div>
+                <div class="stage-status" id="resS2"></div>
+            </div>
+            <div class="stage-icon" id="iconStage2"><i class="fas fa-lock"></i></div>
         </div>
 
         <button class="btn-download" onclick="downloadImage()">
-            <i class="fas fa-id-card"></i> تحميل بطاقة المتسابق (PNG)
+            <i class="fas fa-cloud-download-alt"></i> تحميل بطاقة المتسابق الرسمية (PNG)
         </button>
     </div>
 
-    <a href="index.html" class="back-home"><i class="fas fa-home"></i> العودة للرئيسية</a>
+    <a href="index.html" class="back-home"><i class="fas fa-arrow-right"></i> العودة للشاشة الرئيسية</a>
 
     <div id="hiddenCard">
         <div class="c-header">بطاقة متسابق | مسجد الحاج أحمد الملهود</div>
@@ -235,89 +286,83 @@
     </div>
 
     <script>
-        // متغيرات عالمية لحفظ الحالات القادمة من السيرفر
-        let globalScore1 = "";
-        let globalScore2 = "";
-
         function doSearch() {
             const code = document.getElementById('codeInp').value.trim();
-            const scriptURL = "https://script.google.com/macros/s/AKfycbzbpuNEt0KkmawDHtybenz-1K7SGSiz1Ao-gnIoCcn8QiIht8GDJ7wuRj5AyUx6pv9fBA/exec"; 
+            // رابط الـ Web App الخاص بك على جوجل سكربت
+            const scriptURL = "https://script.google.com/macros/s/AKfycbznMFgTerw3GS-8uzqef-uVy0Ul1eqTalHzqe6qOLf1GM9YptBdnFirJcX8TC2lqJ0FPA/exec"; 
 
-            if(!code) return alert("من فضلك أدخل الكود أولاً!");
+            if(!code) return alert("من فضلك أدخل كود المتسابق أولاً!");
 
             document.querySelector('.btn-search').innerText = "...";
-
-            // إخفاء صندوق النتائج القديم وإعادة ضبط الأزرار عند عمل بحث جديد
-            document.getElementById('scoreBox').style.display = "none";
-            document.getElementById('tab1').className = "tab-btn";
-            document.getElementById('tab2').className = "tab-btn";
 
             fetch(`${scriptURL}?action=checkStatus&code=${code}`)
             .then(res => res.json())
             .then(data => {
-                document.querySelector('.btn-search').innerText = "بحث";
+                document.querySelector('.btn-search').innerText = "دخول";
                 if(data.status === "found") {
+                    // ملء البيانات المكتوبة الأساسية
                     document.getElementById('resName').innerText = data.name;
                     document.getElementById('resLevel').innerText = data.level;
                     document.getElementById('resCode').innerText = code;
                     
-                    // تخزين النتائج القادمة من شيت جوجل
-                    globalScore1 = data.score1 || "قيد المراجعة";
-                    globalScore2 = data.score2 || "لم تبدأ بعد";
+                    const s1 = data.score1 || "قيد المراجعة";
+                    const s2 = data.score2 || "لم تبدأ بعد";
+                    
+                    document.getElementById('resS1').innerText = s1;
+                    document.getElementById('resS2').innerText = s2;
 
-                    // كارت المتسابق الثابت للتنزيل
+                    // --- إدارة ألوان وأيقونات كارت المرحلة الأولى تلقائياً ---
+                    const b1 = document.getElementById('boxStage1');
+                    const i1 = document.getElementById('iconStage1');
+                    b1.className = "stage-box"; // تصفية كلاسات قديمة
+                    
+                    if(s1.includes("مبارك") || s1.includes("مؤهل")) {
+                        b1.classList.add("status-success");
+                        i1.innerHTML = '<i class="fas fa-check-circle"></i>';
+                    } else if(s1.includes("للأسف") || s1.includes("غير مؤهل")) {
+                        b1.classList.add("status-fail");
+                        i1.innerHTML = '<i class="fas fa-times-circle"></i>';
+                    } else {
+                        b1.classList.add("status-review");
+                        i1.innerHTML = '<i class="fas fa-hourglass-half"></i>';
+                    }
+
+                    // --- إدارة ألوان وأيقونات كارت المرحلة الثانية تلقائياً ---
+                    const b2 = document.getElementById('boxStage2');
+                    const i2 = document.getElementById('iconStage2');
+                    b2.className = "stage-box"; // تصفية كلاسات قديمة
+                    
+                    if(s2.includes("مبارك") || s2.includes("مؤهل") || (s2 !== "لم تبدأ بعد" && !s2.includes("مغلق"))) {
+                        b2.classList.add("status-success");
+                        i2.innerHTML = '<i class="fas fa-trophy"></i>';
+                    } else if(s2.includes("مغلق") || s2.includes("للأسف")) {
+                        b2.classList.add("status-fail");
+                        i2.innerHTML = '<i class="fas fa-lock"></i>';
+                    } else {
+                        b2.classList.add("status-review");
+                        i2.innerHTML = '<i class="fas fa-clock"></i>';
+                    }
+
+                    // ملء بيانات الكارت المخفي وإعادة بناء الـ QR Code
                     document.getElementById('cName').innerText = data.name;
                     document.getElementById('cLevel').innerText = data.level;
                     document.getElementById('cCode').innerText = code;
-                    
                     $('#qrPlace').empty().qrcode({ text: code, foreground: "#06301d", width: 150, height: 150 });
 
+                    // إظهار لوحة التحكم بحركة انسيابية ممتازة
                     document.getElementById('resultDisplay').style.display = "block";
-                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                    setTimeout(() => {
+                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                    }, 100);
+                    
                 } else {
-                    alert("عفواً.. الكود غير موجود بقاعدة البيانات!");
+                    alert("عفواً.. هذا الكود الرقمي غير مسجل بقاعدة البيانات!");
                 }
             })
             .catch(err => {
-                alert("خطأ في الاتصال بالخادم!");
-                document.querySelector('.btn-search').innerText = "بحث";
+                alert("خطأ في الاتصال بالخادم الرئيسي للمسابقة!");
+                document.querySelector('.btn-search').innerText = "دخول";
             });
-        }
-
-        // دالة عرض النتيجة المنبثقة والتحكم بالأزرار بالكامل
-        function showStage(stageNum) {
-            const tab1 = document.getElementById('tab1');
-            const tab2 = document.getElementById('tab2');
-            const scoreBox = document.getElementById('scoreBox');
-            const stageTitle = document.getElementById('stageTitle');
-            const dynamicScore = document.getElementById('dynamicScore');
-
-            // إظهار صندوق النتيجة أول ما يضغط على أي زرار
-            scoreBox.style.display = "flex";
-
-            if(stageNum === 1) {
-                // تفعيل شكل زرار المرحلة الأولى وإلغاء الثانية
-                tab1.className = "tab-btn active";
-                tab2.className = "tab-btn";
-                
-                stageTitle.innerText = "نتيجة المرحلة الأولى:";
-                dynamicScore.innerText = globalScore1;
-                
-                // تنسيق الألوان الذكي بناءً على الكلمة
-                if(globalScore1.includes("❌") || globalScore1.includes("للأسف")) {
-                    dynamicScore.className = "gold-txt"; 
-                } else {
-                    dynamicScore.className = "green-txt";
-                }
-            } else {
-                // تفعيل شكل زرار المرحلة الثانية وإلغاء الأولى
-                tab2.className = "tab-btn active";
-                tab1.className = "tab-btn";
-                
-                stageTitle.innerText = "نتيجة المرحلة الثانية:";
-                dynamicScore.innerText = globalScore2;
-                dynamicScore.className = "blue-txt";
-            }
         }
 
         function downloadImage() {
