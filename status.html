@@ -42,7 +42,7 @@
         .shooting-star { position: absolute; top: 20%; left: 80%; width: 150px; height: 1px; background: linear-gradient(-45deg, #fdb931, transparent); animation: shooting 3s infinite; opacity: 0; }
         @keyframes shooting { 0% { transform: rotate(-45deg) translateX(-200%); opacity: 0; } 10% { opacity: 1; } 100% { transform: rotate(-45deg) translateX(200%); opacity: 0; } }
 
-        /* --- صندوق البحث (ضبط الزرار والمدخل) --- */
+        /* --- صندوق البحث --- */
         .search-box { 
             width: 100%; 
             max-width: 450px; 
@@ -107,10 +107,52 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .st-name { font-size: 1.4rem; font-weight: 900; color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .st-info { margin-bottom: 12px; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; }
+        .st-info { margin-bottom: 12px; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
         .green-txt { color: #1e7e34; font-weight: 900; }
         .blue-txt { color: #0056b3; font-weight: 900; }
         .gold-txt { color: #b8860b; font-weight: 900; }
+
+        /* --- ستايل أزرار المراحل (المرحلة الأولى والثانية) --- */
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0 15px 0;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--dark-green);
+            border-radius: 10px;
+            font-weight: 900;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+            text-align: center;
+            background-color: white;
+            color: var(--dark-green);
+        }
+        /* كلاس التفعيل للزرار لما ينضغط عليه */
+        .tab-btn.active {
+            background-color: var(--dark-green);
+            color: var(--gold);
+        }
+        .tab-btn:active { transform: scale(0.97); }
+
+        /* صندوق النتيجة يظهر بشكل منبثق عند الضغط على أي زرار */
+        .score-box {
+            display: none; /* مخفي في البداية لحد ما يضغط على زرار */
+            background: #f1f3f5;
+            padding: 15px;
+            border-radius: 12px;
+            border-right: 5px solid var(--dark-green);
+            margin-bottom: 15px;
+            min-height: 55px;
+            align-items: center;
+            justify-content: space-between;
+            animation: fadeIn 0.3s ease;
+        }
+        .score-title { font-weight: bold; color: #555; }
 
         .btn-download { 
             background-color: var(--dark-green); 
@@ -121,7 +163,7 @@
             border-radius: 12px; 
             font-weight: 900; 
             font-size: 1.1rem; 
-            margin-top: 20px; 
+            margin-top: 10px; 
             cursor: pointer; 
             display: flex; 
             align-items: center; 
@@ -159,10 +201,18 @@
 
     <div id="resultDisplay">
         <div class="st-name" id="resName"></div>
-        <div class="st-info">المستوى: <span id="resLevel"></span></div>
+        <div class="st-info">المستوى: <span id="resLevel" class="gold-txt"></span></div>
         <div class="st-info">الكود الخاص بك: <span class="gold-txt" id="resCode"></span></div>
-        <div class="st-info">نتيجة المرحلة الأولى: <span class="green-txt" id="resS1"></span></div>
-        <div class="st-info">نتيجة المرحلة الثانية: <span class="blue-txt" id="resS2"></span></div>
+        
+        <div class="tabs-container">
+            <button id="tab1" class="tab-btn" onclick="showStage(1)">نتيجة المرحلة الأولى</button>
+            <button id="tab2" class="tab-btn" onclick="showStage(2)">نتيجة المرحلة الثانية</button>
+        </div>
+
+        <div id="scoreBox" class="score-box">
+            <span class="score-title" id="stageTitle">الحالة:</span>
+            <span id="dynamicScore"></span>
+        </div>
 
         <button class="btn-download" onclick="downloadImage()">
             <i class="fas fa-id-card"></i> تحميل بطاقة المتسابق (PNG)
@@ -185,6 +235,10 @@
     </div>
 
     <script>
+        // متغيرات عالمية لحفظ الحالات القادمة من السيرفر
+        let globalScore1 = "";
+        let globalScore2 = "";
+
         function doSearch() {
             const code = document.getElementById('codeInp').value.trim();
             const scriptURL = "https://script.google.com/macros/s/AKfycbznMFgTerw3GS-8uzqef-uVy0Ul1eqTalHzqe6qOLf1GM9YptBdnFirJcX8TC2lqJ0FPA/exec"; 
@@ -192,6 +246,11 @@
             if(!code) return alert("من فضلك أدخل الكود أولاً!");
 
             document.querySelector('.btn-search').innerText = "...";
+
+            // إخفاء صندوق النتائج القديم وإعادة ضبط الأزرار عند عمل بحث جديد
+            document.getElementById('scoreBox').style.display = "none";
+            document.getElementById('tab1').className = "tab-btn";
+            document.getElementById('tab2').className = "tab-btn";
 
             fetch(`${scriptURL}?action=checkStatus&code=${code}`)
             .then(res => res.json())
@@ -201,9 +260,12 @@
                     document.getElementById('resName').innerText = data.name;
                     document.getElementById('resLevel').innerText = data.level;
                     document.getElementById('resCode').innerText = code;
-                    document.getElementById('resS1').innerText = data.score1 || "قيد المراجعة";
-                    document.getElementById('resS2').innerText = data.score2 || "قيد الانتظار";
+                    
+                    // تخزين النتائج القادمة من شيت جوجل
+                    globalScore1 = data.score1 || "قيد المراجعة";
+                    globalScore2 = data.score2 || "لم تبدأ بعد";
 
+                    // كارت المتسابق الثابت للتنزيل
                     document.getElementById('cName').innerText = data.name;
                     document.getElementById('cLevel').innerText = data.level;
                     document.getElementById('cCode').innerText = code;
@@ -220,6 +282,42 @@
                 alert("خطأ في الاتصال بالخادم!");
                 document.querySelector('.btn-search').innerText = "بحث";
             });
+        }
+
+        // دالة عرض النتيجة المنبثقة والتحكم بالأزرار بالكامل
+        function showStage(stageNum) {
+            const tab1 = document.getElementById('tab1');
+            const tab2 = document.getElementById('tab2');
+            const scoreBox = document.getElementById('scoreBox');
+            const stageTitle = document.getElementById('stageTitle');
+            const dynamicScore = document.getElementById('dynamicScore');
+
+            // إظهار صندوق النتيجة أول ما يضغط على أي زرار
+            scoreBox.style.display = "flex";
+
+            if(stageNum === 1) {
+                // تفعيل شكل زرار المرحلة الأولى وإلغاء الثانية
+                tab1.className = "tab-btn active";
+                tab2.className = "tab-btn";
+                
+                stageTitle.innerText = "نتيجة المرحلة الأولى:";
+                dynamicScore.innerText = globalScore1;
+                
+                // تنسيق الألوان الذكي بناءً على الكلمة
+                if(globalScore1.includes("❌") || globalScore1.includes("للأسف")) {
+                    dynamicScore.className = "gold-txt"; 
+                } else {
+                    dynamicScore.className = "green-txt";
+                }
+            } else {
+                // تفعيل شكل زرار المرحلة الثانية وإلغاء الأولى
+                tab2.className = "tab-btn active";
+                tab1.className = "tab-btn";
+                
+                stageTitle.innerText = "نتيجة المرحلة الثانية:";
+                dynamicScore.innerText = globalScore2;
+                dynamicScore.className = "blue-txt";
+            }
         }
 
         function downloadImage() {
