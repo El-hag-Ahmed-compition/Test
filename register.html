@@ -90,6 +90,36 @@
         .btn-submit:hover { transform: translateY(-2px); filter: brightness(1.1); }
         .btn-submit:disabled { background: #666; cursor: not-allowed; transform: none; color: #fff !important; }
 
+        /* --- زر جروب الواتساب المخصص لصفحة النجاح --- */
+        .btn-whatsapp-group {
+            width: 100%;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: #fff;
+            padding: 16px;
+            border: none;
+            border-radius: 15px;
+            font-weight: 900;
+            font-size: 1.25rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 5px;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+            animation: pulseGroup 2s infinite;
+        }
+        .btn-whatsapp-group:hover { transform: translateY(-2px); filter: brightness(1.1); color: #fff; }
+        .btn-whatsapp-group i { font-size: 1.5rem; }
+
+        @keyframes pulseGroup {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 12px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+
         /* --- صندوق الرسائل المقفولة --- */
         .lock-notice-box {
             text-align: center;
@@ -147,7 +177,7 @@
 
         <form id="registrationForm">
             <div class="form-group">
-                <label><i class="fas fa-id-card"></i> الاسم\". الرباعي:</label>
+                <label><i class="fas fa-id-card"></i> الاسم الرباعي:</label>
                 <input type="text" name="name" required placeholder="أدخل اسمك كما في شهادة الميلاد">
             </div>
 
@@ -190,6 +220,11 @@
             <p>كود المتسابق الخاص بك هو:</p>
             <div id="finalCode" class="code-display"></div>
             <p style="font-size: 0.9rem; color: #ddd;">⚠️ برجاء تصوير الشاشة (Screenshot) وحفظ الكود لإظهاره للمشرف يوم الاختبار.</p>
+            
+            <a href="https://chat.whatsapp.com/CHdiA8e4BzEJynYqje3BUy" target="_blank" class="btn-whatsapp-group">
+                <i class="fab fa-whatsapp"></i> الانضمام إلى جروب الواتساب
+            </a>
+
             <button class="btn-submit" onclick="location.reload()">تسجيل متسابق جديد</button>
         </div>
     </div>
@@ -215,7 +250,6 @@
             const lockIcon = document.getElementById('lockIcon');
 
             if (now < registrationStartDate) {
-                // لو دخل الموقع قبل بداية التاريخ المحدد -> اخفي الفورم واظهر رسالة الانتظار
                 form.style.display = 'none';
                 lockNotice.style.display = 'block';
                 lockIcon.className = "fas fa-clock";
@@ -224,7 +258,6 @@
                 return false;
             } 
             else if (now > registrationEndDate) {
-                // لو دخل الموقع بعد انتهاء التوقيت المحدد -> اخفي الفورم واظهر رسالة الغلق
                 form.style.display = 'none';
                 lockNotice.style.display = 'block';
                 lockIcon.className = "fas fa-calendar-times";
@@ -235,9 +268,7 @@
             return true;
         }
 
-        // تشغيل فحص التوقيت فوراً بمجرد فتح الصفحة لتحديد العرض
         checkRegistrationPeriod();
-
 
         // =========================================================
         // منطق حساب السن والمستويات (القديم بالملّي بدون أي تغيير)
