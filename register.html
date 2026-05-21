@@ -90,6 +90,17 @@
         .btn-submit:hover { transform: translateY(-2px); filter: brightness(1.1); }
         .btn-submit:disabled { background: #666; cursor: not-allowed; transform: none; color: #fff !important; }
 
+        /* --- صندوق الرسائل المقفولة --- */
+        .lock-notice-box {
+            text-align: center;
+            padding: 20px 10px;
+        }
+        .lock-notice-box i {
+            font-size: 3.5rem;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+
         /* --- صندوق النجاح --- */
         #successBox {
             display: none;
@@ -128,9 +139,15 @@
     <div class="form-card">
         <h2><i class="fas fa-user-edit"></i> تسجيل المتسابقين</h2>
         
+        <div id="lockNotice" class="lock-notice-box" style="display: none;">
+            <i id="lockIcon" class="fas fa-clock"></i>
+            <p id="lockText" style="font-weight: 700; font-size: 1.15rem; line-height: 1.8;"></p>
+            <center><a href="index.html" class="back-home"><i class="fas fa-home"></i> العودة للرئيسية</a></center>
+        </div>
+
         <form id="registrationForm">
             <div class="form-group">
-                <label><i class="fas fa-id-card"></i> الاسم الرباعي:</label>
+                <label><i class="fas fa-id-card"></i> الاسم\". الرباعي:</label>
                 <input type="text" name="name" required placeholder="أدخل اسمك كما في شهادة الميلاد">
             </div>
 
@@ -187,42 +204,38 @@
         // =========================================================
         // ⚙️ لوحة التحكم في مواعيد وفترات التسجيل (عدل التواريخ هنا براحتك)
         // =========================================================
-        // صيغة كتابة التوقيت: السنة-الشهر-اليومTالساعة:الدقائق:الثواني
         const registrationStartDate = new Date("2026-06-22T00:00:00"); // تاريخ فتح باب التسجيل
         const registrationEndDate   = new Date("2026-06-22T23:59:59"); // تاريخ غلق باب التسجيل
 
-        // دالة الفحص التلقائي وتأمين الأزرار لحظر الاستخدام خارج الفترة المحددة
+        // دالة الفحص التلقائي وحجب الفورم تماماً خارج الفترة
         function checkRegistrationPeriod() {
             const now = new Date();
-            const submitBtn = document.getElementById('submitBtn');
-            const statusMsg = document.getElementById('statusMsg');
+            const lockNotice = document.getElementById('lockNotice');
+            const lockText = document.getElementById('lockText');
+            const lockIcon = document.getElementById('lockIcon');
 
             if (now < registrationStartDate) {
-                // لو دخل الموقع قبل بداية التاريخ المحدد
-                form.addEventListener('submit', preventAction);
-                submitBtn.disabled = true;
-                statusMsg.innerText = `⏳ تنبيه: لم يتم فتح باب التسجيل بعد. سيبدأ التسجيل يوم ${registrationStartDate.toLocaleDateString('ar-EG')}`;
-                statusMsg.style.color = "var(--gold)";
+                // لو دخل الموقع قبل بداية التاريخ المحدد -> اخفي الفورم واظهر رسالة الانتظار
+                form.style.display = 'none';
+                lockNotice.style.display = 'block';
+                lockIcon.className = "fas fa-clock";
+                lockText.innerText = `⏳ تنبيه: لم يتم فتح باب التسجيل بعد.\n سيبدأ التسجيل إن شاء الله يوم ${registrationStartDate.toLocaleDateString('ar-EG')} الساعة ${registrationStartDate.toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})}`;
+                lockText.style.color = "var(--gold)";
                 return false;
             } 
             else if (now > registrationEndDate) {
-                // لو دخل الموقع بعد انتهاء التوقيت المحدد
-                form.addEventListener('submit', preventAction);
-                submitBtn.disabled = true;
-                statusMsg.innerText = "❌ معذرةً، تم غلق باب التسجيل في المسابقة لانتهاء المدة المحددة!";
-                statusMsg.style.color = "#ff4d4d";
+                // لو دخل الموقع بعد انتهاء التوقيت المحدد -> اخفي الفورم واظهر رسالة الغلق
+                form.style.display = 'none';
+                lockNotice.style.display = 'block';
+                lockIcon.className = "fas fa-calendar-times";
+                lockText.innerText = "❌ معذرةً، تم غلق باب التسجيل في المسابقة بالوقت الحالي لانتهاء المدة المحددة رسمياً!";
+                lockText.style.color = "#ff4d4d";
                 return false;
             }
             return true;
         }
 
-        // دالة لمنع الإرسال تماماً بأي شكل التفافي
-        function preventAction(e) {
-            e.preventDefault();
-            alert("عفواً.. التسجيل مغلق حالياً وفقاً للمواعيد المحددة للمسابقة!");
-        }
-
-        // تشغيل فحص التوقيت فوراً بمجرد فتح الطالب للصفحة
+        // تشغيل فحص التوقيت فوراً بمجرد فتح الصفحة لتحديد العرض
         checkRegistrationPeriod();
 
 
@@ -272,7 +285,6 @@
         form.addEventListener('submit', e => {
             e.preventDefault();
 
-            // تأكيد إضافي لفحص الوقت لمنع التلاعب بالـ HTML من المتصفح
             if (!checkRegistrationPeriod()) return;
 
             document.getElementById('submitBtn').disabled = true;
