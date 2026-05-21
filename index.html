@@ -30,8 +30,6 @@
             padding: 15px;
             overflow-y: auto; 
             overflow-x: hidden;
-            /* حماية أسفل الصفحة لضمان عدم تداخل المحتوى والفوتر مع الشريط الجديد */
-            padding-bottom: 90px !important;
         }
 
         /* --- أنيميشن Background الحية --- */
@@ -154,7 +152,7 @@
         }
 
         /* --- شبكة الأزرار --- */
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px; }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
 
         .btn {
             background: var(--glass);
@@ -189,65 +187,49 @@
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
-        .footer { margin-bottom: 30px; color: var(--gold); font-weight: 600; opacity: 0.7; }
+        .footer { margin-bottom: 20px; color: var(--gold); font-weight: 600; opacity: 0.7; }
 
         /* ========================================================= */
-        /* 📱 ستيلات شريط التواصل السفلي الجديد (Bottom Contact Bar) */
-        /* ========================================================= --> */
-        .bottom-contact-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 65px;
-            background: rgba(6, 48, 29, 0.95);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-top: 1.5px solid rgba(253, 185, 49, 0.4);
+        /* 🌟 ستايل أيقونات التواصل الدائرية العائمة أسفل الموقع 🌟 */
+        /* ========================================================= */
+        .bottom-social-container {
             display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 999999;
-            box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.5);
-            padding-bottom: env(safe-area-inset-bottom);
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            margin-bottom: 25px;
+            width: 100%;
         }
 
-        .contact-item {
+        .social-circle-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: rgba(255, 255, 255, 0.7);
+            color: white;
             text-decoration: none;
-            font-size: 0.75rem;
-            font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            flex: 1;
-            height: 100%;
-            gap: 5px;
+            font-size: 1.4rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
-        .contact-item i {
-            font-size: 1.25rem;
-            transition: all 0.3s ease;
+        /* تلوين خلفية كل أيقونة بهويتها الرسمية بشكل شيك ومتناسق */
+        .social-circle-btn.facebook-btn { background-color: #1877f2; }
+        .social-circle-btn.whatsapp-btn { background-color: #25d366; }
+        .social-circle-btn.phone-btn { background-color: #00a8ff; }
+
+        /* تأثير الحركة والـ Hover عند الضغط */
+        .social-circle-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
         }
 
-        .contact-item.active {
-            color: #fdb931 !important;
-            font-weight: bold;
-        }
-        .contact-item.active i {
-            transform: translateY(-2px);
-            text-shadow: 0 0 8px rgba(253, 185, 49, 0.6);
-        }
-
-        /* تأثير الألوان عند الضغط أو التحويم */
-        .contact-item.facebook-item:hover, .contact-item.facebook-item:active { color: #1877f2 !important; }
-        .contact-item.whatsapp-item:hover, .contact-item.whatsapp-item:active { color: #25d366 !important; }
-        .contact-item.phone-item:hover, .contact-item.phone-item:active { color: #00a8ff !important; }
-
-        .contact-item:active i {
-            transform: scale(0.85);
+        .social-circle-btn:active {
+            transform: scale(0.9);
         }
     </style>
 </head>
@@ -292,28 +274,20 @@
         </div>
 
         <div class="footer">نحو جيل متقن لكتاب الله تعالى</div>
-    </div>
 
-    <div class="bottom-contact-bar">
-        <a href="index.html" class="contact-item active">
-            <i class="fas fa-home"></i>
-            <span>الرئيسية</span>
-        </a>
+        <div class="bottom-social-container">
+            <a href="https://www.facebook.com/profile.php?id=61572093324913" class="social-circle-btn facebook-btn" target="_blank" title="صفحتنا على فيسبوك">
+                <i class="fab fa-facebook-f"></i>
+            </a>
 
-        <a href="https://www.facebook.com/profile.php?id=61572093324913">
-            <i class="fab fa-facebook-f"></i>
-            <span>فيسبوك</span>
-        </a>
+            <a href="https://wa.me/201141334629" class="social-circle-btn whatsapp-btn" target="_blank" title="تواصل معنا عبر واتساب">
+                <i class="fab fa-whatsapp"></i>
+            </a>
 
-        <a href="https://wa.me/201141334629">
-            <i class="fab fa-whatsapp"></i>
-            <span>واتساب</span>
-        </a>
-
-        <a href="tel:+20 12 00861020" class="contact-item phone-item">
-            <i class="fas fa-phone-alt"></i>
-            <span>اتصال</span>
-        </a>
+            <a href="tel:+20 12 00861020" class="social-circle-btn phone-btn" title="اتصال هاتفي مباشر">
+                <i class="fas fa-phone-alt"></i>
+            </a>
+        </div>
     </div>
 
     <script>
