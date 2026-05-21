@@ -88,7 +88,7 @@
             box-shadow: 0 5px 15px rgba(253, 185, 49, 0.3);
         }
         .btn-submit:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        .btn-submit:disabled { background: #666; cursor: not-allowed; transform: none; }
+        .btn-submit:disabled { background: #666; cursor: not-allowed; transform: none; color: #fff !important; }
 
         /* --- صندوق النجاح --- */
         #successBox {
@@ -184,6 +184,51 @@
         const form = document.getElementById('registrationForm');
         const successBox = document.getElementById('successBox');
 
+        // =========================================================
+        // ⚙️ لوحة التحكم في مواعيد وفترات التسجيل (عدل التواريخ هنا براحتك)
+        // =========================================================
+        // صيغة كتابة التوقيت: السنة-الشهر-اليومTالساعة:الدقائق:الثواني
+        const registrationStartDate = new Date("2026-05-15T00:00:00"); // تاريخ فتح باب التسجيل
+        const registrationEndDate   = new Date("2026-06-15T23:59:59"); // تاريخ غلق باب التسجيل
+
+        // دالة الفحص التلقائي وتأمين الأزرار لحظر الاستخدام خارج الفترة المحددة
+        function checkRegistrationPeriod() {
+            const now = new Date();
+            const submitBtn = document.getElementById('submitBtn');
+            const statusMsg = document.getElementById('statusMsg');
+
+            if (now < registrationStartDate) {
+                // لو دخل الموقع قبل بداية التاريخ المحدد
+                form.addEventListener('submit', preventAction);
+                submitBtn.disabled = true;
+                statusMsg.innerText = `⏳ تنبيه: لم يتم فتح باب التسجيل بعد. سيبدأ التسجيل يوم ${registrationStartDate.toLocaleDateString('ar-EG')}`;
+                statusMsg.style.color = "var(--gold)";
+                return false;
+            } 
+            else if (now > registrationEndDate) {
+                // لو دخل الموقع بعد انتهاء التوقيت المحدد
+                form.addEventListener('submit', preventAction);
+                submitBtn.disabled = true;
+                statusMsg.innerText = "❌ معذرةً، تم غلق باب التسجيل في المسابقة لانتهاء المدة المحددة!";
+                statusMsg.style.color = "#ff4d4d";
+                return false;
+            }
+            return true;
+        }
+
+        // دالة لمنع الإرسال تماماً بأي شكل التفافي
+        function preventAction(e) {
+            e.preventDefault();
+            alert("عفواً.. التسجيل مغلق حالياً وفقاً للمواعيد المحددة للمسابقة!");
+        }
+
+        // تشغيل فحص التوقيت فوراً بمجرد فتح الطالب للصفحة
+        checkRegistrationPeriod();
+
+
+        // =========================================================
+        // منطق حساب السن والمستويات (القديم بالملّي بدون أي تغيير)
+        // =========================================================
         const levels = [
             { id: "المستوى الخامس", text: "المستوى الخامس (5 أجزاء) - حتى 10 سنوات", max: 10 },
             { id: "المستوى الرابع", text: "المستوى الرابع (ربع القرآن) - حتى 11 سنة", max: 11 },
@@ -226,8 +271,12 @@
 
         form.addEventListener('submit', e => {
             e.preventDefault();
+
+            // تأكيد إضافي لفحص الوقت لمنع التلاعب بالـ HTML من المتصفح
+            if (!checkRegistrationPeriod()) return;
+
             document.getElementById('submitBtn').disabled = true;
-            document.getElementById('statusMsg').innerText = "⏳ جاري إرسال البيانات وتوليد الكود...";
+            document.getElementById('statusMsg').innerText = "⏳ برجاء الانتظار جاري التسجيل...";
             document.getElementById('statusMsg').style.color = "var(--gold)";
 
             fetch(scriptURL, { method: 'POST', body: new FormData(form)})
