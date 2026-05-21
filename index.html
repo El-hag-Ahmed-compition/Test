@@ -137,6 +137,20 @@
         .timer-unit span { font-size: 1.6rem; font-weight: 900; color: var(--gold); display: block; }
         .timer-label { font-size: 0.75rem; color: #bbb; margin-top: 5px; }
 
+        /* رسالة غلق التسجيل البديلة للزر */
+        .closed-registration-notice {
+            grid-column: span 2;
+            background: rgba(255, 77, 77, 0.15);
+            border: 1px dashed #ff4d4d;
+            color: #ff4d4d;
+            padding: 18px;
+            border-radius: 22px;
+            font-weight: 900;
+            font-size: 1.15rem;
+            text-align: center;
+            line-height: 1.6;
+        }
+
         /* --- شبكة الأزرار --- */
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px; }
 
@@ -196,7 +210,7 @@
         <p class="quran-verse">"قُلْ بِفَضْلِ اللَّهِ وَبِرَحْمَتِهِ فَبِذَلِكَ فَلْيَفْرَحُوا هُوَ خَيْرٌ مِمَّا يَجْمَعُونَ"</p>
 
         <div id="counterArea" class="timer-card">
-            <div style="color: var(--gold); margin-bottom: 15px; font-weight: 600; font-size: 0.9rem;">متبقي على انطلاق المسابقة</div>
+            <div id="counterTitle" style="color: var(--gold); margin-bottom: 15px; font-weight: 600; font-size: 0.95rem;">جاري فحص حالة المسابقة...</div>
             <div class="timer-flex">
                 <div class="timer-unit"><span id="days">00</span><div class="timer-label">يوم</div></div>
                 <div class="timer-unit"><span id="hours">00</span><div class="timer-label">ساعة</div></div>
@@ -206,7 +220,10 @@
         </div>
 
         <div class="menu-grid">
-            <a href="register.html" class="btn reg-btn"><i class="fas fa-edit"></i> سجل الآن بالمسابقة</a>
+            <div id="registrationButtonContainer" style="display: contents;">
+                <a href="register.html" id="mainRegBtn" class="btn reg-btn"><i class="fas fa-edit"></i> سجل الآن بالمسابقة</a>
+            </div>
+
             <a href="rules.html" class="btn"><i class="fas fa-scroll"></i> الشروط</a>
             <a href="levels.html" class="btn"><i class="fas fa-trophy"></i> المستويات</a>
             <a href="status.html" class="btn"><i class="fas fa-user-circle"></i> معلومات الطالب</a>
@@ -217,16 +234,50 @@
     </div>
 
     <script>
-        const target = new Date("2026-07-01T00:00:00").getTime();
-        setInterval(() => {
+        // =====================================================================
+        // ⚙️ يجب أن تطابق هذه التواريخ نفس المواعيد الموجودة في ملف register.html بالملّي
+        // =====================================================================
+        const regStart = new Date("2026-06-22T00:00:00").getTime(); // فتح التسجيل
+        const regEnd   = new Date("2026-06-22T23:59:59").getTime(); // غلق التسجيل
+
+        function updateSmartTimer() {
             const now = new Date().getTime();
+            const counterArea = document.getElementById("counterArea");
+            const counterTitle = document.getElementById("counterTitle");
+            const btnContainer = document.getElementById("registrationButtonContainer");
+            
+            let target;
+
+            if (now < regStart) {
+                // [المرحلة 1]: قبل فتح التسجيل
+                target = regStart;
+                counterTitle.innerHTML = "⏳ متبقي على فتح باب التسجيل الإلكتروني";
+            } 
+            else if (now >= regStart && now <= regEnd) {
+                // [المرحلة 2]: أثناء فترة التسجيل شغال
+                target = regEnd;
+                counterTitle.innerHTML = "⚡ سارع بالتسجيل! متبقي على غلق باب المسابقة";
+            } 
+            else {
+                // [المرحلة 3]: بعد غلق التسجيل نهائياً
+                counterArea.style.display = "none"; // اخفي العداد
+                // استبدل زر التسجيل برسالة قفل احترافية
+                btnContainer.innerHTML = `<div class="closed-registration-notice"><i class="fas fa-calendar-times"></i> معذرةً، تم غلق باب التسجيل لانتهاء المدة المحددة!<br><span style="font-size:0.9rem; font-weight:normal; color:#ddd;">انتظروا انطلاق الاختبارات يوم 1-7 إن شاء الله</span></div>`;
+                return;
+            }
+
+            // حساب الوقت المتبقي للمرحلة النشطة
             const diff = target - now;
-            if (diff < 0) return document.getElementById("counterArea").style.display = "none";
-            document.getElementById("days").innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
-            document.getElementById("hours").innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            document.getElementById("minutes").innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            document.getElementById("seconds").innerText = Math.floor((diff % (1000 * 60)) / 1000);
-        }, 1000);
+            
+            document.getElementById("days").innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+            document.getElementById("hours").innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+            document.getElementById("minutes").innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+            document.getElementById("seconds").innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
+        }
+
+        // تشغيل التحديث الفوري وكل ثانية
+        updateSmartTimer();
+        setInterval(updateSmartTimer, 1000);
     </script>
 </body>
 </html>
