@@ -30,9 +30,11 @@
             padding: 15px;
             overflow-y: auto; 
             overflow-x: hidden;
+            /* حماية أسفل الصفحة لضمان عدم تداخل المحتوى والفوتر مع الشريط الجديد */
+            padding-bottom: 90px !important;
         }
 
-        /* --- أنيميشن الخلفية الحية --- */
+        /* --- أنيميشن Background الحية --- */
         .bg-layer {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -188,6 +190,65 @@
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
         .footer { margin-bottom: 30px; color: var(--gold); font-weight: 600; opacity: 0.7; }
+
+        /* ========================================================= */
+        /* 📱 ستيلات شريط التواصل السفلي الجديد (Bottom Contact Bar) */
+        /* ========================================================= --> */
+        .bottom-contact-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 65px;
+            background: rgba(6, 48, 29, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-top: 1.5px solid rgba(253, 185, 49, 0.4);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 999999;
+            box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.5);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+            height: 100%;
+            gap: 5px;
+        }
+
+        .contact-item i {
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item.active {
+            color: #fdb931 !important;
+            font-weight: bold;
+        }
+        .contact-item.active i {
+            transform: translateY(-2px);
+            text-shadow: 0 0 8px rgba(253, 185, 49, 0.6);
+        }
+
+        /* تأثير الألوان عند الضغط أو التحويم */
+        .contact-item.facebook-item:hover, .contact-item.facebook-item:active { color: #1877f2 !important; }
+        .contact-item.whatsapp-item:hover, .contact-item.whatsapp-item:active { color: #25d366 !important; }
+        .contact-item.phone-item:hover, .contact-item.phone-item:active { color: #00a8ff !important; }
+
+        .contact-item:active i {
+            transform: scale(0.85);
+        }
     </style>
 </head>
 <body>
@@ -233,9 +294,31 @@
         <div class="footer">نحو جيل متقن لكتاب الله تعالى</div>
     </div>
 
+    <div class="bottom-contact-bar">
+        <a href="index.html" class="contact-item active">
+            <i class="fas fa-home"></i>
+            <span>الرئيسية</span>
+        </a>
+
+        <a href="https://www.facebook.com/profile.php?id=61572093324913">
+            <i class="fab fa-facebook-f"></i>
+            <span>فيسبوك</span>
+        </a>
+
+        <a href="https://wa.me/201141334629">
+            <i class="fab fa-whatsapp"></i>
+            <span>واتساب</span>
+        </a>
+
+        <a href="tel:+20 12 00861020" class="contact-item phone-item">
+            <i class="fas fa-phone-alt"></i>
+            <span>اتصال</span>
+        </a>
+    </div>
+
     <script>
         // =====================================================================
-        // ⚙️ يجب أن تطابق هذه التواريخ نفس المواعيد الموجودة في ملف register.html بالملّي
+        // ⚙️ المواعيد الخاصة بالعداد الذكي لتتطابق تماماً مع السيستم
         // =====================================================================
         const regStart = new Date("2026-05-22T00:00:00").getTime(); // فتح التسجيل
         const regEnd   = new Date("2026-05-22T23:59:59").getTime(); // غلق التسجيل
@@ -249,24 +332,19 @@
             let target;
 
             if (now < regStart) {
-                // [المرحلة 1]: قبل فتح التسجيل
                 target = regStart;
                 counterTitle.innerHTML = "⏳ متبقي على فتح باب التسجيل الإلكتروني";
             } 
             else if (now >= regStart && now <= regEnd) {
-                // [المرحلة 2]: أثناء فترة التسجيل شغال
                 target = regEnd;
                 counterTitle.innerHTML = "⚡ سارع بالتسجيل! متبقي على غلق باب المسابقة";
             } 
             else {
-                // [المرحلة 3]: بعد غلق التسجيل نهائياً
-                counterArea.style.display = "none"; // اخفي العداد
-                // استبدل زر التسجيل برسالة قفل احترافية
+                counterArea.style.display = "none";
                 btnContainer.innerHTML = `<div class="closed-registration-notice"><i class="fas fa-calendar-times"></i> معذرةً، تم غلق باب التسجيل لانتهاء المدة المحددة!<br><span style="font-size:0.9rem; font-weight:normal; color:#ddd;">انتظروا انطلاق الاختبارات يوم 1-7 إن شاء الله</span></div>`;
                 return;
             }
 
-            // حساب الوقت المتبقي للمرحلة النشطة
             const diff = target - now;
             
             document.getElementById("days").innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
@@ -275,7 +353,6 @@
             document.getElementById("seconds").innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
         }
 
-        // تشغيل التحديث الفوري وكل ثانية
         updateSmartTimer();
         setInterval(updateSmartTimer, 1000);
     </script>
