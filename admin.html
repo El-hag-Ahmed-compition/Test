@@ -80,6 +80,34 @@
         }
         .btn-action:disabled { background: #777; color: #ccc; cursor: not-allowed; box-shadow: none; }
 
+        /* --- [إضافة جديدة]: تصميم بطاقات الإحصائيات الذكية --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 12px 5px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-card i { font-size: 1.2rem; margin-bottom: 5px; display: block; }
+        .stat-card .stat-value { font-size: 1.4rem; font-weight: 900; block-size: auto; }
+        .stat-card .stat-label { font-size: 0.75rem; color: #cdcdcd; font-weight: 600; }
+        
+        /* ألوان البطاقات */
+        .stat-total i { color: var(--gold); }
+        .stat-total .stat-value { color: var(--gold); }
+        .stat-qualified i { color: #2ecc71; }
+        .stat-qualified .stat-value { color: #2ecc71; }
+        .stat-not-qualified i { color: #e74c3c; }
+        .stat-not-qualified .stat-value { color: #e74c3c; }
+
         /* منطقة التحكم العام بالنتائج */
         .global-control-box {
             background: rgba(255, 255, 255, 0.05);
@@ -149,6 +177,24 @@
         <div id="controlArea" style="display: none;">
             <h2><i class="fas fa-user-shield"></i> لوحة التحكم والتحكيم</h2>
             
+            <div class="stats-grid">
+                <div class="stat-card stat-total">
+                    <i class="fas fa-users"></i>
+                    <div class="stat-value" id="statTotal">--</div>
+                    <div class="stat-label">إجمالي المسجلين</div>
+                </div>
+                <div class="stat-card stat-qualified">
+                    <i class="fas fa-user-check"></i>
+                    <div class="stat-value" id="statQualified">--</div>
+                    <div class="stat-label">المؤهلين م1</div>
+                </div>
+                <div class="stat-card stat-not-qualified">
+                    <i class="fas fa-user-times"></i>
+                    <div class="stat-value" id="statNotQualified">--</div>
+                    <div class="stat-label">غير المؤهلين</div>
+                </div>
+            </div>
+            
             <div class="global-control-box">
                 <h3><i class="fas fa-bullhorn"></i> التحكم الجماعي بالنتائج</h3>
                 <div style="font-size: 0.85rem; color: #ccc; text-align: right; margin-bottom: 10px;">التحكم في ظهور أو إخفاء نتائج جميع الطلاب بضغطة زر واحدة:</div>
@@ -217,12 +263,29 @@
             if (passInput === MASTER_PASSWORD) {
                 document.getElementById('lockArea').style.display = 'none';
                 document.getElementById('controlArea').style.display = 'block';
+                // جلب الإحصائيات فور الدخول الناجح للوحة التحكم
+                fetchStats();
             } else {
                 alert('عفواً.. كلمة المرور غير صحيحة! حاول مجدداً.');
             }
         }
 
-        // 2. الدالة المُعدلة والمطابقة لشروط الـ Apps Script بالملّي (تستخدم POST وترسل الأوامر المتوقعة)
+        // --- [إضافة جديدة]: دالة جلب الإحصائيات من الـ Apps Script وتحديث البطاقات ---
+        function fetchStats() {
+            fetch(`${scriptURL}?action=getStats`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.total !== undefined) {
+                    document.getElementById('statTotal').innerText = data.total;
+                    document.getElementById('statQualified').innerText = data.qualified;
+                    document.getElementById('statNotQualified').innerText = data.notQualified;
+                }
+            })
+            .catch(err => {
+                console.error('خطأ أثناء جلب الإحصائيات:', err);
+            });
+        }
+
         function toggleGlobalResults(statusValue) {
             const confirmMsg = statusValue === 'معلنة'
                 ? "هل أنت متأكد من إعلان النتيجة للجميع؟ سيتمكن جميع الطلاب من رؤية نتائجهم الحقيقية فوراً." 
@@ -239,7 +302,6 @@
             statusText.innerText = '⏳ جاري إرسال الأمر وتحديث الخزنة بالشيت...';
             statusText.style.color = '#fdb931';
 
-            // بناء الطلب ليطابق الـ doPost الخاص بك (action='toggleResults' و status='معلنة/مخفية')
             const formData = new FormData();
             formData.append('action', 'toggleResults');
             formData.append('status', statusValue);
@@ -253,6 +315,7 @@
                     statusText.innerText = '✅ ' + data.message;
                     statusText.style.color = '#2ecc71';
                     alert(data.message);
+                    fetchStats(); // تحديث الإحصائيات احتياطياً
                 } else {
                     statusText.innerText = '❌ خطأ: ' + data.message;
                     statusText.style.color = '#e74c3c';
@@ -329,6 +392,7 @@
                     statusText.innerText = '✅ ' + data.message;
                     statusText.style.color = '#2ecc71';
                     alert(data.message);
+                    fetchStats(); // تحديث أرقام العدادات فوراً لتعكس التعديل الجديد!
                 } else {
                     alert(data.message);
                 }
@@ -345,10 +409,10 @@
             document.getElementById('statusMsg').innerText = '';
             document.getElementById('studentCard').style.display = 'none';
             document.getElementById('searchBox').style.display = 'block';
+            fetchStats(); // تحديث الإحصائيات عند الرجوع للبحث
         }
 
         function triggerArchive() {
-            // تنبيه الأرشفة كما طلبت، لتذكيرك بتشغيلها بأمان
             alert('💡 لتأمين الأرشفة بنسبة 100%، يفضل تشغيلها بضغطة زر واحدة من القائمة العلوية داخل جوجل شيت نفسه (إدارة المسابقة 🏆 -> نقل غير المؤهلين للأرشيف) لضمان عرض رسالة التنبيه بالعدد الدقيق وسرعة المعالجة المتكاملة.');
         }
     </script>
