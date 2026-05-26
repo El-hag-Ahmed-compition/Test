@@ -209,13 +209,9 @@
     </div>
 
     <script>
-        // رابط الـ Web App المطور بالملّي والمربوط بالـ Apps Script الذكي
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwSuazDLLxjepfSLx0TMfpT3vGtI64IXV3lJYTldz3QSaibHHftIreSovIGT8nB-g5j/exec';
-        
-        // باسوورد لوحة الإدارة
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyNU4ouF4hgr-GtdTPNFnyHsfAVHwlYHNoSymIfTE559XvF8d-JjoSgSuST1jQY93e_hA/exec';
         const MASTER_PASSWORD = '12_FA@09sh'; 
 
-        // 1. دالة فحص الباسوورد
         function checkPassword() {
             const passInput = document.getElementById('adminPass').value.trim();
             if (passInput === MASTER_PASSWORD) {
@@ -226,7 +222,7 @@
             }
         }
 
-        // 2. دالة التحكم الجماعي بالنتائج (إعلان / إخفاء) للجميع دفعة واحدة
+        // 2. الدالة المحدثة والمعزولة تماماً لمنع الـ Bug والـ Validation Error من الـ Apps Script
         function toggleGlobalResults(isPublish) {
             const confirmMsg = isPublish 
                 ? "هل أنت متأكد من إعلان النتيجة للجميع؟ سيتمكن جميع الطلاب من رؤية نتائجهم الحقيقية فوراً." 
@@ -240,24 +236,21 @@
             
             btnPublish.disabled = true;
             btnHide.disabled = true;
-            statusText.innerText = '⏳ جاري تحديث حالة النظام العامة...';
+            statusText.innerText = '⏳ جاري تحديث حالة النظام العامة للنتائج...';
             statusText.style.color = '#fdb931';
 
-            const formData = new FormData();
-            formData.append('action', 'toggleResultsVisibility');
-            formData.append('visible', isPublish ? 'true' : 'false');
-
-            fetch(scriptURL, { method: 'POST', body: formData })
+            // إرسال الطلب بشكل نقي ومباشر للسيرفر بفعل (Action) مخصص مستقل
+            fetch(`${scriptURL}?action=toggleResultsVisibility&visible=${isPublish}`)
             .then(res => res.json())
             .then(data => {
                 btnPublish.disabled = false;
                 btnHide.disabled = false;
-                if (data.result === 'success') {
-                    statusText.innerText = '✅ ' + data.message;
+                if (data.result === 'success' || data.status === 'success') {
+                    statusText.innerText = '✅ ' + (data.message || 'تم تحديث وضع النتيجة بنجاح!');
                     statusText.style.color = '#2ecc71';
-                    alert(data.message);
+                    alert(data.message || 'تمت العملية بنجاح وعُدلت رؤية النتائج للجميع!');
                 } else {
-                    statusText.innerText = '❌ خطأ: ' + data.message;
+                    statusText.innerText = '❌ خطأ من السيرفر: ' + data.message;
                     statusText.style.color = '#e74c3c';
                     alert(data.message);
                 }
@@ -265,12 +258,11 @@
             .catch(err => {
                 btnPublish.disabled = false;
                 btnHide.disabled = false;
-                statusText.innerText = '❌ فشل الاتصال بالسيرفر لتعديل حالة الإعلان!';
+                statusText.innerText = '❌ حدث خطأ أثناء الاتصال بالسيرفر، تأكد من الـ Apps Script.';
                 statusText.style.color = '#e74c3c';
             });
         }
 
-        // 3. دالة البحث عن الطالب بكوده
         function searchStudent() {
             const code = document.getElementById('studentCode').value.trim();
             if (!code) return alert('برجاء كتابة كود الطالب أولاً!');
@@ -280,7 +272,6 @@
             btnSearch.innerText = '🔍 جاري جلب البيانات...';
             document.getElementById('statusMsg').innerText = '';
 
-            // طلب البيانات مع تمرير ميزة isAdmin لقراءة البيانات الصافية من الشيت للتعديل
             fetch(`${scriptURL}?action=checkStatus&code=${code}&isAdmin=true`)
             .then(res => res.json())
             .then(data => {
@@ -288,16 +279,13 @@
                 btnSearch.innerText = 'بحث عن المتسابق';
 
                 if (data.status === 'found') {
-                    // ملء بطاقة البيانات
                     document.getElementById('resName').innerText = data.name;
                     document.getElementById('resLevel').innerText = data.level;
                     document.getElementById('resPhone').innerText = data.phone;
                     
-                    // اختيار القيم الحالية في القوائم المنسدلة تلقائياً
                     document.getElementById('stage1Select').value = data.score1 || "قيد المراجعة";
                     document.getElementById('stage2Select').value = data.score2 || "لم تبدأ بعد";
 
-                    // إخفاء صندوق البحث وإظهار بطاقة التعديل
                     document.getElementById('searchBox').style.display = 'none';
                     document.getElementById('studentCard').style.display = 'block';
                 } else {
@@ -311,7 +299,6 @@
             });
         }
 
-        // 4. دالة حفظ البيانات المعدلة في الشيت لـ طالب محدد
         function saveStatus() {
             const code = document.getElementById('studentCode').value.trim();
             const s1 = document.getElementById('stage1Select').value;
@@ -349,7 +336,6 @@
             });
         }
 
-        // 5. تصفير البطاقة والرجوع للبحث عن كود جديد
         function resetForm() {
             document.getElementById('studentCode').value = '';
             document.getElementById('statusMsg').innerText = '';
@@ -357,9 +343,8 @@
             document.getElementById('searchBox').style.display = 'block';
         }
 
-        // 6. دالة تشغيل الأرشفة التلقائية للطلاب غير المؤهلين مباشرة من الموبايل
         function triggerArchive() {
-            if (!confirm('هل أنت متأكد من تفعيل الأرشفة؟ سيتم فحص شيتات المستويات الخمسة ونقل كل من هو "غير مؤهل" لشيت الأرشيف تلقائياً وحذفه من الجدول الرئيسي لتجهيز المرحلة الثانية.')) return;
+            if (!confirm('هل أنت متأكد من تفعيل الأرشفة؟ سيتم نقل المتسابقين غير المؤهلين للأرشيف تلقائياً.')) return;
 
             const btnArchive = document.getElementById('btnArchive');
             const statusText = document.getElementById('statusMsg');
@@ -393,7 +378,6 @@
                 btnArchive.innerText = '📁 تفعيل أرشفة الطلاب غير المؤهلين';
                 statusText.innerText = '❌ حدث خطأ في الشبكة، لم تكتمل الأرشفة!';
                 statusText.style.color = '#e74c3c';
-                alert('حدث خطأ أثناء الاتصال بالسيرفر لتنفيذ الأرشفة!');
             });
         }
     </script>
