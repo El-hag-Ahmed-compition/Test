@@ -147,7 +147,7 @@
         .info-value.level-color { color: #c48c02; font-weight: 900; }
         .info-value.code-color { color: var(--dark-green); font-weight: 900; font-family: monospace; font-size: 1.3rem; }
 
-        /* --- تعديل المراحل لتصبح أزرار تفاعلية صريحة وجميلة --- */
+        /* --- المراحل التفاعلية --- */
         .stage-btn {
             width: 100%;
             background: #ffffff;
@@ -166,7 +166,6 @@
             position: relative;
         }
         
-        /* تأثيرات حركة الأزرار عند التفاعل والضغط */
         .stage-btn:hover { 
             transform: translateY(-2px); 
             box-shadow: 0 6px 15px rgba(6, 48, 29, 0.1);
@@ -178,7 +177,7 @@
 
         .stage-info { text-align: right; }
         .stage-title { font-size: 1.05rem; font-weight: 700; color: var(--dark-green); margin-bottom: 4px; }
-        .stage-status { font-size: 1.2rem; font-weight: 900; color: #666; }
+        .stage-status { font-size: 1.15rem; font-weight: 900; color: #666; }
         .stage-icon { font-size: 1.8rem; color: #ccc; }
 
         /* حالات الأزرار التفاعلية الذكية المعتمدة على النتيجة */
@@ -293,7 +292,8 @@
     <script>
         function doSearch() {
             const code = document.getElementById('codeInp').value.trim();
-            const scriptURL = "https://script.google.com/macros/s/AKfycbyH1nHX-jCUXKleYSeMY9sISu4DcQpvO505skFjdmcJ9XAU3rwCbPZJsO4-g_kbN6rLFQ/exec"; 
+            // الرابط المحدث والخاص بك بالكامل بالملي
+            const scriptURL = "https://script.google.com/macros/s/AKfycbyNU4ouF4hgr-GtdTPNFnyHsfAVHwlYHNoSymIfTE559XvF8d-JjoSgSuST1jQY93e_hA/exec"; 
 
             if(!code) return alert("من فضلك أدخل كود المتسابق أولاً!");
 
@@ -319,7 +319,11 @@
                     const i1 = document.getElementById('iconStage1');
                     b1.className = "stage-btn"; // تصفية الكلاسات السابقة
                     
-                    if(s1.includes("مبارك") || s1.includes("مؤهل")) {
+                    // فحص لو كانت النتيجة مخفية من السيرفر
+                    if(s1.includes("جاري رصد")) {
+                        b1.classList.add("btn-status-review");
+                        i1.innerHTML = '<i class="fas fa-hourglass-half"></i>';
+                    } else if(s1.includes("مبارك") || s1.includes("مؤهل")) {
                         b1.classList.add("btn-status-success");
                         i1.innerHTML = '<i class="fas fa-check-circle"></i>';
                     } else if(s1.includes("للأسف") || s1.includes("غير مؤهل")) {
@@ -335,7 +339,10 @@
                     const i2 = document.getElementById('iconStage2');
                     b2.className = "stage-btn"; // تصفية الكلاسات السابقة
                     
-                    if(s2.includes("مبارك") || s2.includes("مؤهل") || (s2 !== "لم تبدأ بعد" && !s2.includes("مغلق"))) {
+                    if(s1.includes("جاري رصد") || s2.includes("جاري رصد")) {
+                        b2.classList.add("btn-status-review");
+                        i2.innerHTML = '<i class="fas fa-clock"></i>';
+                    } else if(s2.includes("مبارك") || s2.includes("مؤهل") || (s2 !== "لم تبدأ بعد" && !s2.includes("مغلق") && !s2.includes("⏳"))) {
                         b2.classList.add("btn-status-success");
                         i2.innerHTML = '<i class="fas fa-trophy"></i>';
                     } else if(s2.includes("مغلق") || s2.includes("للأسف")) {
@@ -382,4 +389,3 @@
     </script>
 </body>
 </html>
-١
