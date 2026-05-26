@@ -9,6 +9,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;600;700;900&display=swap');
         
@@ -290,9 +292,36 @@
     </div>
 
     <script>
+        // دالة تشغيل تأثير الاحتفال بقصاصات الورق الملونة
+        function launchCelebration() {
+            // فرقعة أولى من المنتصف السفلي
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 }
+            });
+            
+            // فرقعة من الجانب الأيسر بعد 300 مللي ثانية
+            setTimeout(() => {
+                confetti({
+                    particleCount: 100,
+                    spread: 100,
+                    origin: { x: 0.3, y: 0.5 }
+                });
+            }, 300);
+
+            // فرقعة من الجانب الأيمن بعد 600 مللي ثانية لإكمال الرؤية المبهجة
+            setTimeout(() => {
+                confetti({
+                    particleCount: 100,
+                    spread: 100,
+                    origin: { x: 0.7, y: 0.5 }
+                });
+            }, 600);
+        }
+
         function doSearch() {
             const code = document.getElementById('codeInp').value.trim();
-            // الرابط المحدث والخاص بك بالكامل بالملي
             const scriptURL = "https://script.google.com/macros/s/AKfycbxYkUhcZssdxnt7AyzM5q1fheqe7AQ-OhWQLNcoj1tqEXTtarGCch5kBkZvnE_WI-uNCQ/exec"; 
 
             if(!code) return alert("من فضلك أدخل كود المتسابق أولاً!");
@@ -319,7 +348,6 @@
                     const i1 = document.getElementById('iconStage1');
                     b1.className = "stage-btn"; // تصفية الكلاسات السابقة
                     
-                    // فحص لو كانت النتيجة مخفية من السيرفر
                     if(s1.includes("جاري رصد")) {
                         b1.classList.add("btn-status-review");
                         i1.innerHTML = '<i class="fas fa-hourglass-half"></i>';
@@ -361,6 +389,12 @@
 
                     // إظهار لوحة التحكم بحركة انسيابية ممتازة
                     document.getElementById('resultDisplay').style.display = "block";
+                    
+                    // --- [تفعيل الميزة الجديدة]: تشغيل الاحتفال فوراً عند التأهل للمرحلة الأولى أو الثانية ---
+                    if (s1.includes("مبارك") || s1.includes("مؤهل") || s2.includes("مبارك") || s2.includes("ناجح")) {
+                        launchCelebration();
+                    }
+
                     setTimeout(() => {
                         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                     }, 100);
