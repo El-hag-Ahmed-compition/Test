@@ -153,10 +153,10 @@
                 <h3><i class="fas fa-bullhorn"></i> التحكم الجماعي بالنتائج</h3>
                 <div style="font-size: 0.85rem; color: #ccc; text-align: right; margin-bottom: 10px;">التحكم في ظهور أو إخفاء نتائج جميع الطلاب بضغطة زر واحدة:</div>
                 <div class="grid-buttons">
-                    <button class="btn-action btn-publish" id="btnPublishAll" onclick="toggleGlobalResults(true)">
+                    <button class="btn-action btn-publish" id="btnPublishAll" onclick="toggleGlobalResults('معلنة')">
                         <i class="fas fa-eye"></i> إعلان النتيجة 
                     </button>
-                    <button class="btn-action btn-hide-results" id="btnHideAll" onclick="toggleGlobalResults(false)">
+                    <button class="btn-action btn-hide-results" id="btnHideAll" onclick="toggleGlobalResults('مخفية')">
                         <i class="fas fa-eye-slash"></i> إخفاء النتيجة
                     </button>
                 </div>
@@ -209,7 +209,7 @@
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwSuazDLLxjepfSLx0TMfpT3vGtI64IXV3lJYTldz3QSaibHHftIreSovIGT8nB-g5j/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyNU4ouF4hgr-GtdTPNFnyHsfAVHwlYHNoSymIfTE559XvF8d-JjoSgSuST1jQY93e_hA/exec';
         const MASTER_PASSWORD = '12_FA@09sh'; 
 
         function checkPassword() {
@@ -222,9 +222,9 @@
             }
         }
 
-        // 2. الدالة المحدثة والمعزولة تماماً لمنع الـ Bug والـ Validation Error من الـ Apps Script
-        function toggleGlobalResults(isPublish) {
-            const confirmMsg = isPublish 
+        // 2. الدالة المُعدلة والمطابقة لشروط الـ Apps Script بالملّي (تستخدم POST وترسل الأوامر المتوقعة)
+        function toggleGlobalResults(statusValue) {
+            const confirmMsg = statusValue === 'معلنة'
                 ? "هل أنت متأكد من إعلان النتيجة للجميع؟ سيتمكن جميع الطلاب من رؤية نتائجهم الحقيقية فوراً." 
                 : "هل أنت متأكد من إخفاء النتيجة؟ سيظهر لجميع الطلاب أن النتائج قيد المراجعة والتدقيق.";
             
@@ -236,21 +236,25 @@
             
             btnPublish.disabled = true;
             btnHide.disabled = true;
-            statusText.innerText = '⏳ جاري تحديث حالة النظام العامة للنتائج...';
+            statusText.innerText = '⏳ جاري إرسال الأمر وتحديث الخزنة بالشيت...';
             statusText.style.color = '#fdb931';
 
-            // إرسال الطلب بشكل نقي ومباشر للسيرفر بفعل (Action) مخصص مستقل
-            fetch(`${scriptURL}?action=toggleResultsVisibility&visible=${isPublish}`)
+            // بناء الطلب ليطابق الـ doPost الخاص بك (action='toggleResults' و status='معلنة/مخفية')
+            const formData = new FormData();
+            formData.append('action', 'toggleResults');
+            formData.append('status', statusValue);
+
+            fetch(scriptURL, { method: 'POST', body: formData })
             .then(res => res.json())
             .then(data => {
                 btnPublish.disabled = false;
                 btnHide.disabled = false;
-                if (data.result === 'success' || data.status === 'success') {
-                    statusText.innerText = '✅ ' + (data.message || 'تم تحديث وضع النتيجة بنجاح!');
+                if (data.result === 'success') {
+                    statusText.innerText = '✅ ' + data.message;
                     statusText.style.color = '#2ecc71';
-                    alert(data.message || 'تمت العملية بنجاح وعُدلت رؤية النتائج للجميع!');
+                    alert(data.message);
                 } else {
-                    statusText.innerText = '❌ خطأ من السيرفر: ' + data.message;
+                    statusText.innerText = '❌ خطأ: ' + data.message;
                     statusText.style.color = '#e74c3c';
                     alert(data.message);
                 }
@@ -258,7 +262,7 @@
             .catch(err => {
                 btnPublish.disabled = false;
                 btnHide.disabled = false;
-                statusText.innerText = '❌ حدث خطأ أثناء الاتصال بالسيرفر، تأكد من الـ Apps Script.';
+                statusText.innerText = '❌ فشل الاتصال بالسيرفر، تأكد من الإنترنت.';
                 statusText.style.color = '#e74c3c';
             });
         }
@@ -344,41 +348,8 @@
         }
 
         function triggerArchive() {
-            if (!confirm('هل أنت متأكد من تفعيل الأرشفة؟ سيتم نقل المتسابقين غير المؤهلين للأرشيف تلقائياً.')) return;
-
-            const btnArchive = document.getElementById('btnArchive');
-            const statusText = document.getElementById('statusMsg');
-            
-            btnArchive.disabled = true;
-            btnArchive.innerText = '📁 جاري فرز ونقل البيانات للأرشيف...';
-            statusText.innerText = '⏳ جاري جرد ونقل المتسابقين غير المؤهلين للأرشيف حالياً...';
-            statusText.style.color = '#fdb931';
-
-            const formData = new FormData();
-            formData.append('action', 'archiveStudents');
-
-            fetch(scriptURL, { method: 'POST', body: formData })
-            .then(res => res.json())
-            .then(data => {
-                btnArchive.disabled = false;
-                btnArchive.innerText = '📁 تفعيل أرشفة الطلاب غير المؤهلين';
-                
-                if (data.result === 'success') {
-                    statusText.innerText = '✅ ' + data.message;
-                    statusText.style.color = '#2ecc71';
-                    alert(data.message);
-                } else {
-                    statusText.innerText = '❌ خطأ: ' + data.message;
-                    statusText.style.color = '#e74c3c';
-                    alert(data.message);
-                }
-            })
-            .catch(err => {
-                btnArchive.disabled = false;
-                btnArchive.innerText = '📁 تفعيل أرشفة الطلاب غير المؤهلين';
-                statusText.innerText = '❌ حدث خطأ في الشبكة، لم تكتمل الأرشفة!';
-                statusText.style.color = '#e74c3c';
-            });
+            // تنبيه الأرشفة كما طلبت، لتذكيرك بتشغيلها بأمان
+            alert('💡 لتأمين الأرشفة بنسبة 100%، يفضل تشغيلها بضغطة زر واحدة من القائمة العلوية داخل جوجل شيت نفسه (إدارة المسابقة 🏆 -> نقل غير المؤهلين للأرشيف) لضمان عرض رسالة التنبيه بالعدد الدقيق وسرعة المعالجة المتكاملة.');
         }
     </script>
 </body>
