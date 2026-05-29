@@ -391,8 +391,11 @@
                     document.getElementById('resultDisplay').style.display = "block";
                     
                     // --- [تفعيل الميزة الجديدة]: تشغيل الاحتفال فوراً عند التأهل للمرحلة الأولى أو الثانية ---
-                    if (s1.includes("مبارك") || s1.includes("مؤهل") || s2.includes("مبارك") || s2.includes("ناجح")) {
-                        launchCelebration();
+                    const isQualifiedS1 = (s1.includes("مبارك") || s1.includes("مؤهل")) && !s1.includes("غير");
+                    const isQualifiedS2 = (s2.includes("مبارك") || s2.includes("ناجح")) && !s2.includes("لأسف");
+
+                    if (isQualifiedS1 || isQualifiedS2) {
+                        launchCelebration();[span_2](start_span)[span_2](end_span)
                     }
 
                     setTimeout(() => {
